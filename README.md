@@ -1,17 +1,19 @@
 # ier_hf
 Csoportos szekvenciális árverés és kommmunikáció
 
-1. ágens eldönti, hogy közvetlenül tudja-e célba juttatni a csomagot.
+Ágens eldönti, hogy közvetlenül tudja-e célba juttatni a csomagot.
+Igen, akkor annak az útnak az idejével licitál
+Nem, akkor futtat egy 'körbekérdezős' protokollt, hogy ki tudná őt kisegíteni. (Ez mehetne tovább rekúrzívan)
 
- ha igen, akkor annak az útnak az idejével licitál
- ha nem, akkor futtat egy 'körbekérdezős' protokollt, hogy ki tudná őt kisegíteni. 
- Az így kelentkező összidővel licitál a kezdeményező ágens.
+Az így keletkező összidővel licitál a kezdeményező ágens.
  
- összes ágensre ugyanez, a kegkisebb idő nyer?
+Összes ágensre ugyanez, a kegkisebb idő nyer?
  
- Egész rendszer célja:
+Egész rendszer célja?
+
+MIN(leghosszab rendelés kiszállítási ideje) = MINIMAX
  
- MIN(km/perc kritérium)
+MIN(km/perc kritérium) = MINIAVE
  
- MIN(szum kiszállítási idő)
+MIN(szum kiszállítási idő) = MINISUM
  
