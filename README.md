@@ -13,7 +13,7 @@ Egész rendszer célja?
 
 MIN(leghosszab rendelés kiszállítási ideje) = MINIMAX
  
-MIN(km/perc kritérium) = MINIAVE
+MIN(megadható km/perc kritérium) = MINIAVE
  
 MIN(szum kiszállítási idő) = MINISUM
  
