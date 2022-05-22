@@ -1,83 +1,90 @@
-import jason.environment.grid.GridWorldView;
+
+package world;
+
+import jason.environment.grid.*;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.*;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.DefaultXYDataset;
-
-
-/** class that implements the View of the Game of Life application */
+/**
+ * class that implements the View of Domestic Robot application
+ */
 public class WorldView extends GridWorldView {
 
-    private static final long serialVersionUID = 1L;
+    WorldModel hmodel;
 
-    WorldModel worldModel;
-
-
-    public WorldView(WorldModel model, final DeliveryEnvironment env) {
-        super(model, "Normative Simulation", 500);
-        worldModel = model;
+    public WorldView(WorldModel model) {
+        super(model, "Delivery drones", 700);
+        hmodel = model;
+        defaultFont = new Font("Arial", Font.BOLD, 16); // change default font
         setVisible(true);
         repaint();
-
-        getCanvas().addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent e) {
-                int col = e.getX() / cellSizeW;
-                int lin = e.getY() / cellSizeH;
-                if (col >= 0 && lin >= 0 && col < getModel().getWidth() && lin < getModel().getHeight()) {
-                    // hmodel.add(FoodModel.FOOD, col, lin);
-                    //env.updateNeighbors(hmodel.getAgId(col,lin));
-                    update(col, lin);
-                }
-            }
-            public void mouseExited(MouseEvent e) {}
-            public void mouseEntered(MouseEvent e) {}
-            public void mousePressed(MouseEvent e) {}
-            public void mouseReleased(MouseEvent e) {}
-        });
-
-        JFreeChart xyc = ChartFactory.createXYLineChart(
-                "Agents' strength",
-                "step",
-                "strength",
-                dataset, // dataset,
-                PlotOrientation.VERTICAL, // orientation,
-                true, // legend,
-                true, // tooltips,
-                true); //urls
-        ChartFrame frame = new ChartFrame("Normative Simulation: Agents' Strength", xyc);
-        frame.pack();
-        frame.setVisible(true);
     }
 
-    public void addSerie(String key, double[][] values) {
-        dataset.addSeries(key, values);
+    /**
+     * draw application objects
+     */
+    @Override
+    public void draw(Graphics g, int x, int y, int object) {
+        switch (object) {
+            case WorldModel.DEPOT:
+                drawDepot(g, x, y);
+                break;
+            case WorldModel.VILLAGE:
+                drawVillage(g, x, y);
+                break;
+            case WorldModel.MAIN_DEPOT:
+                drawMainDepot(g, x, y);
+                break;
+        }
+    }
+
+    public void drawDepot(Graphics g, int x, int y) {
+        g.setColor(Color.gray);
+        g.fillRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
+        g.setColor(Color.pink);
+        g.drawRect(x * cellSizeW + 2, y * cellSizeH + 2, cellSizeW - 4, cellSizeH - 4);
+        g.drawLine(x * cellSizeW + 2, y * cellSizeH + 2, (x + 1) * cellSizeW - 2, (y + 1) * cellSizeH - 2);
+        g.drawLine(x * cellSizeW + 2, (y + 1) * cellSizeH - 2, (x + 1) * cellSizeW - 2, y * cellSizeH + 2);
+    }
+
+    public void drawMainDepot(Graphics g, int x, int y) {
+        g.setColor(Color.red);
+        g.fillRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
+        g.setColor(Color.pink);
+        g.drawRect(x * cellSizeW + 2, y * cellSizeH + 2, cellSizeW - 4, cellSizeH - 4);
+        g.drawLine(x * cellSizeW + 2, y * cellSizeH + 2, (x + 1) * cellSizeW - 2, (y + 1) * cellSizeH - 2);
+        g.drawLine(x * cellSizeW + 2, (y + 1) * cellSizeH - 2, (x + 1) * cellSizeW - 2, y * cellSizeH + 2);
+    }
+
+    public void drawVillage(Graphics g, int x, int y) {
+        g.setColor(Color.yellow);
+        g.drawRect(x * cellSizeW + 2, y * cellSizeH + 2, cellSizeW - 4, cellSizeH - 4);
+        int[] vx = new int[4];
+        int[] vy = new int[4];
+        vx[0] = x * cellSizeW + (cellSizeW / 2);
+        vy[0] = y * cellSizeH;
+        vx[1] = (x + 1) * cellSizeW;
+        vy[1] = y * cellSizeH + (cellSizeH / 2);
+        vx[2] = x * cellSizeW + (cellSizeW / 2);
+        vy[2] = (y + 1) * cellSizeH;
+        vx[3] = x * cellSizeW;
+        vy[3] = y * cellSizeH + (cellSizeH / 2);
+        g.fillPolygon(vx, vy, 4);
+    }
+
+    public void drawEnemy(Graphics g, int x, int y) {
+        g.setColor(Color.red);
+        g.fillOval(x * cellSizeW + 7, y * cellSizeH + 7, cellSizeW - 8, cellSizeH - 8);
     }
 
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
-        g.setColor(Color.GRAY);
-        g.fillRect(x * cellSizeW + 1, y * cellSizeH+1, cellSizeW-1, cellSizeH-1);
-        if (hmodel.hasObject(FoodModel.FOOD, x, y)) {
-            drawFood(g, x, y);
-        }
+        Location lRobot = hmodel.getAgPos(0);
+        c = Color.yellow;
+        super.drawAgent(g, x, y, c, -1);
+        g.setColor(Color.black);
+        super.drawString(g, x, y, defaultFont, "Robot");
     }
-
-    @Override
-    public void draw(Graphics g, int x, int y, int object) {
-        if (object == FoodModel.FOOD && !hmodel.hasObject(FoodModel.AGENT, x, y)) {
-            drawFood(g, x, y);
-        }
-    }
-
-    public void drawFood(Graphics g, int x, int y) {
-        g.setColor(Color.YELLOW);
-        g.fillRect(x * cellSizeW + 15, y * cellSizeH+15, cellSizeW-30, cellSizeH-30);
-    }
-
 }

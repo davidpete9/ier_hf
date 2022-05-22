@@ -1,4 +1,6 @@
 
+package world;
+
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
@@ -9,7 +11,7 @@ import java.util.logging.Logger;
 
 public class DeliveryEnvironment extends jason.environment.Environment {
 
-    private Logger logger = Logger.getLogger("jasonTeamSimLocal.mas2j." + MiningPlanet.class.getName());
+    private Logger logger = Logger.getLogger("ier_hf.mas2j." + DeliveryEnvironment.class.getName());
 
     WorldModel  model;
     WorldView   view;
@@ -33,7 +35,7 @@ public class DeliveryEnvironment extends jason.environment.Environment {
     public void init(String[] args) {
         hasGUI = args[2].equals("yes");
         sleep  = Integer.parseInt(args[1]);
-        initWorld(Integer.parseInt(args[0]));
+        initWorld();
     }
 
     public int getSimId() {
@@ -57,7 +59,8 @@ public class DeliveryEnvironment extends jason.environment.Environment {
             if (sleep > 0) {
                 Thread.sleep(sleep);
             }
-
+            int agId = getAgIdBasedOnName(ag);
+            /*
             // get the agent id based on its name
             int agId = getAgIdBasedOnName(ag);
 
@@ -78,7 +81,7 @@ public class DeliveryEnvironment extends jason.environment.Environment {
                 view.udpateCollectedGolds();
             } else {
                 logger.info("executing: " + action + ", but not implemented!");
-            }
+            }*/
             if (result) {
                 updateAgPercept(agId);
                 return true;
@@ -94,33 +97,19 @@ public class DeliveryEnvironment extends jason.environment.Environment {
         return (Integer.parseInt(agName.substring(5))) - 1;
     }
 
-    public void initWorld(int w) {
-        simId = w;
+    public void initWorld() {
+
         try {
-            switch (w) {
-                case 1:
-                    model = WorldModel.world1();
-                    break;
-                case 2:
-                    model = WorldModel.world2();
-                    break;
-                case 3:
-                    model = WorldModel.world3();
-                    break;
-                default:
-                    logger.info("Invalid index!");
-                    return;
-            }
-            clearPercepts();
-            addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
-            addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
+            model = WorldModel.create(25,25,1);
+            //clearPercepts();
+            //addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
+            logger.warning(model.toString());
             if (hasGUI) {
                 view = new WorldView(model);
-                view.setEnv(this);
-                view.udpateCollectedGolds();
+                //view.setEnv(this);
             }
-            updateAgsPercept();
-            informAgsEnvironmentChanged();
+            //updateAgsPercept();
+            //informAgsEnvironmentChanged();
         } catch (Exception e) {
             logger.warning("Error creating world "+e);
         }
@@ -144,7 +133,7 @@ public class DeliveryEnvironment extends jason.environment.Environment {
     }
 
     private void updateAgPercept(String agName, int ag) {
-        clearPercepts(agName);
+        /*clearPercepts(agName);
         // its location
         Location l = model.getAgPos(ag);
         addPercept(agName, Literal.parseLiteral("pos(" + l.x + "," + l.y + ")"));
@@ -162,12 +151,12 @@ public class DeliveryEnvironment extends jason.environment.Environment {
         updateAgPercept(agName, l.x, l.y + 1);
         updateAgPercept(agName, l.x + 1, l.y - 1);
         updateAgPercept(agName, l.x + 1, l.y);
-        updateAgPercept(agName, l.x + 1, l.y + 1);
+        updateAgPercept(agName, l.x + 1, l.y + 1);*/
     }
 
 
     private void updateAgPercept(String agName, int x, int y) {
-        if (model == null || !model.inGrid(x,y)) return;
+        /*if (model == null || !model.inGrid(x,y)) return;
         if (model.hasObject(WorldModel.OBSTACLE, x, y)) {
             addPercept(agName, Literal.parseLiteral("cell(" + x + "," + y + ",obstacle)"));
         } else {
@@ -180,7 +169,7 @@ public class DeliveryEnvironment extends jason.environment.Environment {
             if (model.hasObject(WorldModel.AGENT, x, y)) {
                 addPercept(agName, Literal.parseLiteral("cell(" + x + "," + y + ",ally)"));
             }
-        }
+        }*/
     }
 
 }

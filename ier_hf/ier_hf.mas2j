@@ -12,7 +12,8 @@
 
 MAS ier_hf {
 
-    infrastructure: Local
+    
+    environment: world.DeliveryEnvironment(3,50,yes)
 
     agents: drone;
 }
