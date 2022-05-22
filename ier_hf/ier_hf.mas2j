@@ -14,5 +14,5 @@ MAS ier_hf {
 
     infrastructure: Local
 
-    agents: sample_agent;
+    agents: drone;
 }
