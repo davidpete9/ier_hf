@@ -3,9 +3,7 @@
 !start.
 
 +!start : true 
-	<- !start_auction(1, 10, 13, 5);
-		!start_auction(2, 5, 12, 15);
-		!start_auction(3, 23, 5, 20).
+	<- .print("Program started!").
 
 			  //N-nth auction
 			  //Village posX: X
@@ -20,5 +18,5 @@
       .length(L,2)  // all 2 expected bids was received
    <- .min(L,b(V,W));
       .print("Winner is ",W," with ", V);
-      .broadcast(tell, winner(W));
+      .broadcast(tell, winner(N,W));
       .abolish(place_bid(N,_)).

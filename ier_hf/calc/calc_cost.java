@@ -18,7 +18,7 @@ import java.lang.Math;
 import world.WorldModel;
 
 public class calc_cost extends DefaultInternalAction {
-    boolean printinfo = false;
+    boolean printinfo = true;
 
     public int get_dist(int posX, int posY, int goalX, int goalY) {
         int dX = posX - goalX;
