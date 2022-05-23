@@ -59,6 +59,7 @@ public class DeliveryEnvironment extends jason.environment.Environment {
             if (sleep > 0) {
                 Thread.sleep(sleep);
             }
+            logger.warning("executeAction running");
             int agId = getAgIdBasedOnName(ag);
             /*
             // get the agent id based on its name
