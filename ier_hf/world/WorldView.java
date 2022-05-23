@@ -2,10 +2,15 @@
 package world;
 
 import jason.environment.grid.*;
+import java.util.logging.Logger;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.FlowLayout;  
+import java.awt.event.*;
+import javax.swing.*;
+
 
 /**
  * class that implements the View of Domestic Robot application
@@ -13,12 +18,51 @@ import java.awt.Graphics;
 public class WorldView extends GridWorldView {
 
     WorldModel hmodel;
+    private Logger logger = Logger.getLogger("ier_hf.mas2j." + WorldView.class.getName());
 
     public WorldView(WorldModel model) {
         super(model, "Delivery drones", 700);
         hmodel = model;
         defaultFont = new Font("Arial", Font.BOLD, 16); // change default font
         setVisible(true);
+        
+        JFrame orderFrame = new JFrame("Add order");
+        JPanel panel = new JPanel();  
+        panel.setLayout(new FlowLayout());  
+        JButton addBtn = new JButton("Add!");
+        JTextField tf = new JTextField(5);
+        tf.setText(1+"");
+        panel.add(new JLabel("Weight: "));
+        panel.add(tf);
+        
+        
+        
+        JComboBox comboBox = new JComboBox();
+        for (int i = 0; i < hmodel.getVillages().size();i++) {
+           Location l = hmodel.getVillages().get(i);
+           comboBox.addItem( new Item(i,i+". ("+l.x+" "+l.y+")"));
+        }
+        
+        panel.add(new JLabel("Destination:"));
+        panel.add(comboBox);
+        panel.add(addBtn);
+        
+        addBtn.addActionListener(new ActionListener() { 
+	  public void actionPerformed(ActionEvent e) { 
+	       
+	 	double weight = tf.getText().length() == 0 ? 1 : Double.parseDouble(tf.getText()); 
+	 	int selectedVillage = ((Item)comboBox.getSelectedItem()).getId();  
+	 	Location target = hmodel.getVillages().get(selectedVillage);
+	 	Order newOrd = new Order(target,weight);
+	 	
+	  } 
+	});
+        
+        
+        orderFrame.add(panel);
+        orderFrame.setVisible(true);
+        orderFrame.setSize(200, 300);  
+        orderFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
         repaint();
     }
 
@@ -88,3 +132,30 @@ public class WorldView extends GridWorldView {
         super.drawString(g, x, y, defaultFont, "Robot");
     }
 }
+
+   class Item
+    {
+        private int id;
+        private String description;
+ 
+        public Item(int id, String description)
+        {
+            this.id = id;
+            this.description = description;
+        }
+ 
+        public int getId()
+        {
+            return id;
+        }
+ 
+        public String getDescription()
+        {
+            return description;
+        }
+ 
+        public String toString()
+        {
+            return description;
+        }
+    }
