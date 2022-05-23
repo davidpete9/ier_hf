@@ -61,6 +61,15 @@ public class DeliveryEnvironment extends jason.environment.Environment {
             }
             logger.warning("executeAction running");
             int agId = getAgIdBasedOnName(ag);
+
+            if (action.getFunctor().equals("move_towards")) {
+                int posX = Integer.parseInt(action.getTerm(0).toString());
+                int posY = Integer.parseInt(action.getTerm(1).toString());
+
+                model.fly(new Location(posX, posY), agId);
+                return true;
+                //logger.warning(action.toString());
+            }
             /*
             // get the agent id based on its name
             int agId = getAgIdBasedOnName(ag);
@@ -84,7 +93,7 @@ public class DeliveryEnvironment extends jason.environment.Environment {
                 logger.info("executing: " + action + ", but not implemented!");
             }*/
             if (result) {
-                updateAgPercept(agId);
+                //updateAgPercept(agId);
                 return true;
             }
         } catch (InterruptedException e) {
@@ -105,6 +114,7 @@ public class DeliveryEnvironment extends jason.environment.Environment {
             updateAgsPercept();
             if (hasGUI) {
                 view = new WorldView(model);
+                model.setView(view);
                 //view.setEnv(this);
             }
             informAgsEnvironmentChanged();
@@ -130,10 +140,7 @@ public class DeliveryEnvironment extends jason.environment.Environment {
     }
 
     private void updateAgPercept(int ag) {
-        if (ag == 0) {
-        updateAgPercept("drone", ag);
-        }
-        updateAgPercept("drone_" + (ag + 1), ag);
+        updateAgPercept("drone" + (ag + 1), ag);
     }
 
     private void updateAgPercept(String agName, int ag) {
@@ -150,9 +157,9 @@ public class DeliveryEnvironment extends jason.environment.Environment {
 	 
 	 addPercept(agName, Literal.parseLiteral("mainDepot(" + model.getMainDepot().x + "," + model.getMainDepot().y + ")"));
 	 
-	 for (Location d : model.getVillages()) {
+	 /*for (Location d : model.getVillages()) {
 	     addPercept(agName, Literal.parseLiteral("village(" + d.x + "," + d.y + ")"));
-	 }
+	 }*/
     }
 
 }

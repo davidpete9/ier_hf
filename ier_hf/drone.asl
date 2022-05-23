@@ -26,6 +26,7 @@ charge(100).
 	?near(SX,SY);
 	+pos(SX,SY);
 	-near(SX,SY);
+	move_towards(SX, SY);
 	.print("I WON.... But at what cost?!").
 	
 	
