@@ -3,12 +3,18 @@ package world;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
 
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.List;
 import java.util.ArrayList;
 
+import java.lang.Math;
+
 public class WorldModel extends GridWorldModel {
+
+    private Logger logger = Logger.getLogger("ier_hf.mas2j." + WorldModel.class.getName());
+
 
     public static final int   MAIN_DEPOT  = 16;
     public static final int   DEPOT = 32;
@@ -90,6 +96,15 @@ public class WorldModel extends GridWorldModel {
         }
         return model;
 
+    }
+
+    public void fly(Location dest, int agId) {
+        setAgPos(agId, dest);
+
+        view.update(mainDepot.x, mainDepot.y);
+        view.repaint();
+
+        return;
     }
 
 }
