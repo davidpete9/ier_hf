@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.lang.Math;
+
 public class WorldModel extends GridWorldModel {
 
     private Logger logger = Logger.getLogger("ier_hf.mas2j." + WorldModel.class.getName());
@@ -97,13 +99,7 @@ public class WorldModel extends GridWorldModel {
     }
 
     public void fly(Location dest, int agId) {
-        Location l = getAgPos(agId);
         setAgPos(agId, dest);
-        logger.info("ITT VAGYUNK");
-        logger.info("Pos: " + l.x + " " + l.y);
-        l = getAgPos(agId);
-        logger.info("Pos: " + l.x + " " + l.y);
-        logger.info("DEst: " + dest.x + " " + dest.y);
 
         view.update(mainDepot.x, mainDepot.y);
         view.repaint();

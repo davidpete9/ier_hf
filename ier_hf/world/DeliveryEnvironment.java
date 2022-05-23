@@ -9,6 +9,8 @@ import jason.environment.grid.Location;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.util.Collection;
+
 public class DeliveryEnvironment extends jason.environment.Environment {
 
     private Logger logger = Logger.getLogger("ier_hf.mas2j." + DeliveryEnvironment.class.getName());
@@ -63,10 +65,39 @@ public class DeliveryEnvironment extends jason.environment.Environment {
             int agId = getAgIdBasedOnName(ag);
 
             if (action.getFunctor().equals("move_towards")) {
-                int posX = Integer.parseInt(action.getTerm(0).toString());
-                int posY = Integer.parseInt(action.getTerm(1).toString());
+                int agX = Integer.parseInt(action.getTerm(0).toString());
+                int agY = Integer.parseInt(action.getTerm(1).toString());
 
-                model.fly(new Location(posX, posY), agId);
+                int destX = Integer.parseInt(action.getTerm(2).toString());
+                int destY = Integer.parseInt(action.getTerm(3).toString());
+
+                int speed = Integer.parseInt(action.getTerm(4).toString());
+
+                double dirx = destX - agX;
+                double diry = destY - agY;
+
+                double length = Math.sqrt(dirx * dirx + diry*diry);
+                dirx /= length;
+                diry /= length;
+
+                dirx *= 2;
+                diry *= 2;
+
+                double actualLength = Math.sqrt(dirx * dirx + diry*diry);
+                int nextX = 0; int nextY = 0;
+                if (actualLength > length) {
+                    model.fly(new Location(destX, destY), agId);
+                    //addPercept(ag, Literal.parseLiteral("pos(" + destX + "," + destY + ")"));
+                    nextX = destX; nextY = destY;
+                } else {
+                    model.fly(new Location(agX + (int) dirx, agY + (int) diry), agId);
+                    nextX = (agX + (int) dirx); nextY = (agY + (int) diry);
+                    //addPercept(ag, Literal.parseLiteral("pos(" + (agX + (int) dirx) + "," + (agY + (int) diry)  + ")"));
+                }
+
+                removePercept(ag, Literal.parseLiteral("pos(" + agX + "," + agY + ")"));
+                addPercept(ag, Literal.parseLiteral("pos(" + nextX + "," + nextY  + ")"));
+
                 return true;
                 //logger.warning(action.toString());
             }

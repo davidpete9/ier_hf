@@ -1,5 +1,6 @@
 /*Initial beliefs*/
 charge(100).
+near(10,10).
 		
 +auction(N, X, Y, W)[source(S)] : (.my_name(I))
 	<- ?pos(AgX, AgY); 
@@ -22,14 +23,20 @@ charge(100).
 		
 // TODO: modositani azt, hogy mi van ha nyer		
 +winner(N,W)[source(S)] : (.my_name(I) & winner(N,I)) 
-	<- -pos;
-	?near(SX,SY);
-	+pos(SX,SY);
-	-near(SX,SY);
-	move_towards(SX, SY);
-	.print("I WON.... But at what cost?!").
+	<- ?near(SX,SY);
+		!at(SX,SY);
+		.print("I WON.... But at what cost?!").
 	
 	
 // TODO: modositani azt, hogy mi van ha nem nyer
 +winner(N,W)[source(S)] : (.my_name(I) & not winner(N,I)) 
 	<- .print("I did not win :(").
+	
++!at(PX, PY) : pos(PX,PY) <- .print("YEA").	
++!at(PX, PY) : not pos(PX,PY) 
+	<- .print("Megyek oda: ", PX, " ", PY);
+		?near(SX,SY);
+		?pos(AgX, AgY);
+		?speed(Speed);	
+		move_towards(AgX, AgY, SX, SY, Speed);
+		!at(SX,SY).		
