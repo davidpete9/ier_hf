@@ -18,6 +18,8 @@ public class WorldModel extends GridWorldModel {
 
     int num_of_depots = 2;
     int num_of_villags = 5;
+    
+    int nbAgs = 0;
 
     List<Location> depots = new ArrayList<Location>();
 
@@ -28,7 +30,7 @@ public class WorldModel extends GridWorldModel {
 
     private WorldModel(int w, int h, int nbAgs) {
         super(w, h, nbAgs);
-        setAgPos(0, 10,10);
+        this.nbAgs = nbAgs;
         this.initWorld();
     }
 
@@ -82,6 +84,10 @@ public class WorldModel extends GridWorldModel {
         this.addVillage(23,5);
         this.addVillage(1,1);
         this.addVillage(5,5);
+        
+         for (int i = 0; i < this.nbAgs; i++) {
+          setAgPos(i, mainDepot.x,mainDepot.y	);
+        }
         return model;
 
     }

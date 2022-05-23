@@ -98,21 +98,21 @@ public class DeliveryEnvironment extends jason.environment.Environment {
     }
 
     public void initWorld() {
-
-        try {
-            model = WorldModel.create(25,25,1);
+	this.model = WorldModel.create(25,25,2);
             //clearPercepts();
-            //addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
             logger.warning(model.toString());
+            updateAgsPercept();
             if (hasGUI) {
                 view = new WorldView(model);
                 //view.setEnv(this);
             }
-            //updateAgsPercept();
-            //informAgsEnvironmentChanged();
+            informAgsEnvironmentChanged();
+        /*    
+        try {
+            
         } catch (Exception e) {
             logger.warning("Error creating world "+e);
-        }
+        }*/
     }
 
     public void endSimulation() {
@@ -129,47 +129,29 @@ public class DeliveryEnvironment extends jason.environment.Environment {
     }
 
     private void updateAgPercept(int ag) {
-        updateAgPercept("miner" + (ag + 1), ag);
+        if (ag == 0) {
+        updateAgPercept("drone", ag);
+        }
+        updateAgPercept("drone_" + (ag + 1), ag);
     }
 
     private void updateAgPercept(String agName, int ag) {
-        /*clearPercepts(agName);
+    
+        clearPercepts(agName);
         // its location
         Location l = model.getAgPos(ag);
+        if (l == null) {return;}
         addPercept(agName, Literal.parseLiteral("pos(" + l.x + "," + l.y + ")"));
 
-        if (model.isCarryingGold(ag)) {
-            addPercept(agName, Literal.parseLiteral("carrying_gold"));
-        }
-
-        // what's around
-        updateAgPercept(agName, l.x - 1, l.y - 1);
-        updateAgPercept(agName, l.x - 1, l.y);
-        updateAgPercept(agName, l.x - 1, l.y + 1);
-        updateAgPercept(agName, l.x, l.y - 1);
-        updateAgPercept(agName, l.x, l.y);
-        updateAgPercept(agName, l.x, l.y + 1);
-        updateAgPercept(agName, l.x + 1, l.y - 1);
-        updateAgPercept(agName, l.x + 1, l.y);
-        updateAgPercept(agName, l.x + 1, l.y + 1);*/
-    }
-
-
-    private void updateAgPercept(String agName, int x, int y) {
-        /*if (model == null || !model.inGrid(x,y)) return;
-        if (model.hasObject(WorldModel.OBSTACLE, x, y)) {
-            addPercept(agName, Literal.parseLiteral("cell(" + x + "," + y + ",obstacle)"));
-        } else {
-            if (model.hasObject(WorldModel.GOLD, x, y)) {
-                addPercept(agName, Literal.parseLiteral("cell(" + x + "," + y + ",gold)"));
-            }
-            if (model.hasObject(WorldModel.ENEMY, x, y)) {
-                addPercept(agName, Literal.parseLiteral("cell(" + x + "," + y + ",enemy)"));
-            }
-            if (model.hasObject(WorldModel.AGENT, x, y)) {
-                addPercept(agName, Literal.parseLiteral("cell(" + x + "," + y + ",ally)"));
-            }
-        }*/
+	 for (Location d : model.getDepots()) {
+	     addPercept(agName, Literal.parseLiteral("depot(" + d.x + "," + d.y + ")"));
+	 }
+	 
+	 addPercept(agName, Literal.parseLiteral("mainDepot(" + model.getMainDepot().x + "," + model.getMainDepot().y + ")"));
+	 
+	 for (Location d : model.getVillages()) {
+	     addPercept(agName, Literal.parseLiteral("village(" + d.x + "," + d.y + ")"));
+	 }
     }
 
 }
