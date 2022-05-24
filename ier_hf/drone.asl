@@ -23,6 +23,11 @@ chargeT(0).
 // Place where the drone recharges
 rechargeLocation(0,0).
 
+// Base time
+baseTime(0).
+
+lastBaseTime(0).
+
 //------------------------------------------------------------------------------
 
 // Minden dronnak vissza kell mennie a main depotba csomag felvetelehez
@@ -42,6 +47,7 @@ rechargeLocation(0,0).
 		?speed(Speed);
 		.print("it is I:", I, " and my position is ", AgX, " ", AgY);
 		?lastDest(LastX, LastY);
+		?baseTime(BaseTime);
 		
 		// agent posX, agent posY, goal pos X, goal pos Y,
 		// Capacity -> drone weight capacity
@@ -51,8 +57,15 @@ rechargeLocation(0,0).
 		
 		// StationX, StationY -> closest (relative to the destination) refueling station's coords
 		// B -> calculated cost
-		calc.calc_cost(LastX, LastY, X, Y, W, Capacity, Speed, Charge, 0, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
+		calc.calc_cost(LastX, LastY, X, Y, W, Capacity, Speed, Charge, BaseTime, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
 		//.print("Make route stuff: ", X, " ", Y, " ", ChargeAtX, " ", ChargeAtY, " ", ChargeT);
+		
+		?lastBaseTime(LB);
+		-lastBaseTime(LB);
+		+lastBaseTime(BaseTime);
+		
+		-baseTime(BaseTime);
+		+baseTime(BaseTime + Bid);
 		
 		?lastCharge(LC);
 		-lastCharge(LC);
@@ -133,11 +146,16 @@ rechargeLocation(0,0).
 +winner(N,W)[source(S)] : (.my_name(I) & chargeT(C) & not winner(N,I)) 
 	<- 	?charge(Charge);
 		?lastCharge(LC);
+		?baseTime(BT);
+		?lastBaseTime(LBT);
 		
 		.print("Charge and lc ", Charge, " ", LC);
 		
 		-charge(Charge);
 		+charge(LC);
+		
+		-baseTime(LB);
+		+baseTime(LBT);
 		
 		?routenr(RouteNr);
 		?route(RouteNr-1, AX, AY);
@@ -159,7 +177,9 @@ rechargeLocation(0,0).
 //------------------------------------------------------------------------------		
 +!charge(ChargeT) : (ChargeT == 0) <- true.
 +!charge(ChargeT) : not (ChargeT == 0) 
-	<- 	?chargeT(ChargeTime);
+	<- 	!lowerBaseTime;
+		.print("CHARGING TIME BABY");
+		?chargeT(ChargeTime);
 		-chargeT(ChargeTime);
 		+chargeT(ChargeTime-1);
 		
@@ -169,15 +189,17 @@ rechargeLocation(0,0).
 		!charge(ChargeTime-1).
 		
 +!move(Iter, PX, PY) : pos(PX, PY) & routenr(NR) & (Iter == (NR-1))
-	<-	-delivering(true);
+	<-	!lowerBaseTime;
+		-delivering(true);
 		+delivering(false);
 		
 		//-route(Iter, PX, PY);
 		
 		.print("Finished all delivery, awaiting orders").
 
-+!move(Iter, PX, PY) : pos(PX, PY) & chargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
-	<-	-iterator(Iter);
++!move(Iter, PX, PY) : pos(PX, PY) & rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
+	<-	!lowerBaseTime;
+		-iterator(Iter);
 		+iterator(Iter+1);
 		
 		?chargeT(ChargeTime);
@@ -188,8 +210,9 @@ rechargeLocation(0,0).
 		?route(Iter+1, NextX, NextY);
 		!move(Iter+1, NextX, NextY).
 		
-+!move(Iter, PX, PY) : pos(PX, PY) & not chargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
-	<-	-iterator(Iter);
++!move(Iter, PX, PY) : pos(PX, PY) & not rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
+	<-	!lowerBaseTime;
+		-iterator(Iter);
 		+iterator(Iter+1);
 		
 		//-route(Iter, PX, PY);
@@ -199,7 +222,17 @@ rechargeLocation(0,0).
 		
 +!move(Iter, PX, PY) : not pos(PX, PY)
 	<-	//.print("Megyek oda: ", PX, " ", PY);
+		!lowerBaseTime;
 		?pos(AgX, AgY);
 		?speed(Speed);
 		move_towards(AgX, AgY, PX, PY, Speed);
 		!move(Iter, PX, PY).
+		
++!lowerBaseTime : baseTime(BT) & (BT > 0) 
+	<- 	/*?baseTime(BT);
+		-baseTime(BT);
+		+baseTime(BT-1);*/
+		true.
+		
++!lowerBaseTime : baseTime(BT) & (BT <= 0) 
+	<- 	true.
