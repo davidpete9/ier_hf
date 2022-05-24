@@ -67,17 +67,41 @@ public class calc_cost extends DefaultInternalAction {
         refuelStations.add(model.getMainDepot());
 
         Location closestStationToDestination = get_closest_station(goalX, goalY, refuelStations);
+        
+        //distance from Goal To Station
         int distFromStation = get_dist(goalX, goalY, closestStationToDestination.x, closestStationToDestination.y);
 
+	//From position to Goal
         int dist = get_dist(posX, posY, goalX, goalY);
 
         double cost = (dist + distFromStation) / (double) speed; // The bid/cost is the distance it takes for the drone to complete the delivery times the speed
 
-        int chargeLeft = charge - (int) Math.round((dist + distFromStation) * energyConsumption);
+
+	int chargeRequired = (int)Math.round((dist + distFromStation) * energyConsumption);
+        int chargeLeft = charge - chargeRequired; 
 
         int actualCost = maxBid;
+        
+        int chargeAtX = 0;
+        int chargeAtY = 0;
+        double chargeT = 0;
+    		
+    	double chargePerTValue = 0.5;
+    	    
         if (chargeLeft > 0) {
             actualCost = (int) Math.round(cost * 100);
+        }
+        else { 
+        //Charge first. Get the closest station from the actual position
+        Location closestStationFromPos = get_closest_station(posX, posY, refuelStations);
+        int distToStation = get_dist(posX, posY, closestStationFromPos.x, closestStationFromPos.y);
+        int chargeLeftAtStation = charge - (int) Math.round(distToStation * energyConsumption);
+        if (chargeLeftAtStation > 0) {
+        	chargeAtX = closestStationFromPos.x;
+        	chargeAtY = closestStationFromPos.y;
+        	chargeT = (chargeRequired-chargeLeftAtStation)*chargePerTValue;
+        	chargeLeft = 0;
+        }
         }
 
         if (printinfo) {
@@ -90,7 +114,12 @@ public class calc_cost extends DefaultInternalAction {
 
         un.unifies(terms[8], new NumberTermImpl(closestStationToDestination.x));
         un.unifies(terms[9], new NumberTermImpl(closestStationToDestination.y));
-        return un.unifies(terms[10], new NumberTermImpl(actualCost));
+        un.unifies(terms[10], new NumberTermImpl(actualCost));
+        un.unifies(terms[11], new NumberTermImpl(chargeLeft));
+        un.unifies(terms[13], new NumberTermImpl(chargeAtX));
+        un.unifies(terms[13], new NumberTermImpl(chargeAtY));
+        return un.unifies(terms[14], new NumberTermImpl(chargeT));
+        
      	//return true;
     }
 }
