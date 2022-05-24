@@ -104,6 +104,7 @@ public class calc_cost extends DefaultInternalAction {
         
         int chargeT = 0;
         int full_cost = baseTime+to_maindepot+from_depot_to_goal;
+        ts.getLogger().info(" main to goalll..."+get_dist(main.x, main.y, goalX, goalY));
         
        ts.getLogger().info("full cost: "+full_cost);
         

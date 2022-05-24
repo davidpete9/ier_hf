@@ -99,6 +99,6 @@ public class WorldView extends GridWorldView {
         c = Color.yellow;
         super.drawAgent(g, x, y, c, -1);
         g.setColor(Color.black);
-        super.drawString(g, x, y, defaultFont, "Drón");
+        super.drawString(g, x, y, defaultFont, "Drón"+id);
     }
 }
