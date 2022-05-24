@@ -16,11 +16,13 @@ charge(100).
 		
 		// StationX, StationY -> closest (relative to the destination) refueling station's coords
 		// B -> calculated cost
-		calc.calc_cost(AgX, AgY, X, Y, Capacity, W, Charge, Speed, StationX, StationY, Bid);
+		calc.calc_cost(AgX, AgY, X, Y, Capacity, W, Charge, Speed, StationX, StationY, Bid, ChargeLeftAfter, ChargeAtX,ChargeAtY,ChargeT);
+		
 		+next(N, X, Y); // destination of the next delivery
 		+near(N, StationX,StationY);
 		
 		.print("Calculated cost: ", Bid);
+		.print("ChargeT ", ChargeT);
 		.send(S, tell, place_bid(N, Bid)).		
 		
 // TODO: modositani azt, hogy mi van ha nyer		
