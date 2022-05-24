@@ -50,16 +50,16 @@ public class WorldView extends GridWorldView {
     public void drawDepot(Graphics g, int x, int y) {
         g.setColor(Color.gray);
         g.fillRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
-        g.setColor(Color.pink);
+        g.setColor(Color.yellow);
         g.drawRect(x * cellSizeW + 2, y * cellSizeH + 2, cellSizeW - 4, cellSizeH - 4);
         g.drawLine(x * cellSizeW + 2, y * cellSizeH + 2, (x + 1) * cellSizeW - 2, (y + 1) * cellSizeH - 2);
         g.drawLine(x * cellSizeW + 2, (y + 1) * cellSizeH - 2, (x + 1) * cellSizeW - 2, y * cellSizeH + 2);
     }
 
     public void drawMainDepot(Graphics g, int x, int y) {
-        g.setColor(Color.red);
+        g.setColor(Color.black);
         g.fillRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
-        g.setColor(Color.pink);
+        g.setColor(Color.yellow);
         g.drawRect(x * cellSizeW + 2, y * cellSizeH + 2, cellSizeW - 4, cellSizeH - 4);
         g.drawLine(x * cellSizeW + 2, y * cellSizeH + 2, (x + 1) * cellSizeW - 2, (y + 1) * cellSizeH - 2);
         g.drawLine(x * cellSizeW + 2, (y + 1) * cellSizeH - 2, (x + 1) * cellSizeW - 2, y * cellSizeH + 2);
@@ -99,6 +99,6 @@ public class WorldView extends GridWorldView {
         c = Color.yellow;
         super.drawAgent(g, x, y, c, -1);
         g.setColor(Color.black);
-        super.drawString(g, x, y, defaultFont, "Robot");
+        super.drawString(g, x, y, defaultFont, "Drón");
     }
 }
