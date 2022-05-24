@@ -9,7 +9,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.*;
 import javax.swing.*;
-import java.lang.String;
 
 
 /**
@@ -66,26 +65,19 @@ public class WorldView extends GridWorldView {
     }
 
     public void drawVillage(Graphics g, int x, int y) {
-        g.setColor (Color.pink);
-		int[] vx = new int[7];
-        int[] vy = new int[7];
-        vx[0] = x * cellSizeW + (cellSizeW / 5);
-        vy[0] = (y + 1) * cellSizeH;
-        vx[1] = (x + 1) * cellSizeW - (cellSizeW / 5);
-        vy[1] = (y + 1)* cellSizeH;
-        vx[2] = (x + 1) * cellSizeW - (cellSizeW / 5);
-        vy[2] = y * cellSizeH + 5 * (cellSizeH / 10);
-        vx[3] = (x + 1) * cellSizeW;
-        vy[3] = y * cellSizeH + 5 * (cellSizeH / 10);
-        vx[4] = x * cellSizeW + (cellSizeW / 2);
-		vy[4] = y * cellSizeH;
-		vx[5] = x * cellSizeW;
-		vy[5] = y * cellSizeH + 5 * (cellSizeH / 10);
-		vx[6] = x * cellSizeW + (cellSizeW / 5);
-		vy[6] = y * cellSizeH + 5 * (cellSizeH / 10);
-		g.fillPolygon(vx, vy, 7);
-		g.setColor(Color.black);
-		super.drawString(g, x, y, defaultFont, "" + x + ", " + y);
+        g.setColor(Color.yellow);
+        g.drawRect(x * cellSizeW + 2, y * cellSizeH + 2, cellSizeW - 4, cellSizeH - 4);
+        int[] vx = new int[4];
+        int[] vy = new int[4];
+        vx[0] = x * cellSizeW + (cellSizeW / 2);
+        vy[0] = y * cellSizeH;
+        vx[1] = (x + 1) * cellSizeW;
+        vy[1] = y * cellSizeH + (cellSizeH / 2);
+        vx[2] = x * cellSizeW + (cellSizeW / 2);
+        vy[2] = (y + 1) * cellSizeH;
+        vx[3] = x * cellSizeW;
+        vy[3] = y * cellSizeH + (cellSizeH / 2);
+        g.fillPolygon(vx, vy, 4);
     }
 
     public void drawEnemy(Graphics g, int x, int y) {
