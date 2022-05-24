@@ -105,10 +105,10 @@ public class calc_cost extends DefaultInternalAction {
         int chargeT = 0;
         int full_cost = baseTime+to_maindepot+from_depot_to_goal;
         
-       
+       ts.getLogger().info("full cost: "+full_cost);
         
         if (chargeWillBe - chargeCost > 0) { //1. OK. No need to charge, it can go back to main AFTER the order!
-        	        
+        	        ts.getLogger().info("option 1, main-main no charge");
         	         un.unifies(terms[9], new NumberTermImpl(main.x));//ReturnAtX
 	                 un.unifies(terms[10], new NumberTermImpl(main.y)); //ReturnAtY
 			 un.unifies(terms[11], new NumberTermImpl(full_cost));
@@ -125,7 +125,7 @@ public class calc_cost extends DefaultInternalAction {
            int chargeCostToClosest = (to_maindepot+from_goal_to_closest_depo)*costWithNoCargo+from_depot_to_goal*costWithCargo;
            
            if (chargeWillBe - chargeCostToClosest > 0 ) { //2. Ok. No need to charge, but it goes to a refuel depot insted of the main AFTER it completes the order.
-           
+           		 ts.getLogger().info("option 2, main-depo no charge");
            	         un.unifies(terms[9], new NumberTermImpl(closestStationToDestination.x));
 			 un.unifies(terms[10], new NumberTermImpl(closestStationToDestination.y));
 			 un.unifies(terms[11], new NumberTermImpl(full_cost));
@@ -139,6 +139,7 @@ public class calc_cost extends DefaultInternalAction {
            	chargeCost = to_maindepot*costWithNoCargo;
            	if (chargeWillBe - chargeCost > 0) { // 3. It can go to main depot to charge first.
            	     //Charge cost need to be enught to after the delivery it should be enought to go to the closest depot.
+           	     ts.getLogger().info("option 3, main-depo "+chargeT+" charge.");
            	         chargeT = CalculateEnergyLoss.getChargeTime(chargeCostToClosest-(chargeWillBe-chargeCost));
            	         un.unifies(terms[9], new NumberTermImpl(closestStationToDestination.x));//ReturnAtX
 	                 un.unifies(terms[10], new NumberTermImpl(closestStationToDestination.y)); //ReturnAtY
@@ -160,7 +161,7 @@ public class calc_cost extends DefaultInternalAction {
            	   	int fromMainToGoalAndClosest = from_depot_to_goal*costWithCargo+from_goal_to_closest_depo*costWithNoCargo;
            	   	
            	   	chargeT = CalculateEnergyLoss.getChargeTime((chargeCost+chargeToMain+fromMainToGoalAndClosest)-chargeWillBe);
-           	   	
+           	   	ts.getLogger().info("option 4, depo-depo/main "+chargeT+" charge.");
            	   	un.unifies(terms[9], new NumberTermImpl(closestStationToDestination.x));//ReturnAtX
 	                un.unifies(terms[10], new NumberTermImpl(closestStationToDestination.y)); //ReturnAtY
            	     	un.unifies(terms[11], new NumberTermImpl(full_cost+chargeT+to_closest_depot+from_depot_to_main));
