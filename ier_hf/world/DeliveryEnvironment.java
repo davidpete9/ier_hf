@@ -61,7 +61,7 @@ public class DeliveryEnvironment extends jason.environment.Environment {
             if (sleep > 0) {
                 Thread.sleep(sleep);
             }
-            logger.warning("executeAction running");
+            //logger.warning("executeAction running");
             int agId = getAgIdBasedOnName(ag);
 
             if (action.getFunctor().equals("move_towards")) {

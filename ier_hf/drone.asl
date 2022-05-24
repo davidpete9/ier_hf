@@ -1,5 +1,9 @@
 /*Initial beliefs*/
+// Current charge, its value lies between 0 and 100
 charge(100).
+
+// Last charge - in case this drone does not win the auction
+lastCharge(100).
 		
 // Number of auctions won
 routenr(0).
@@ -11,7 +15,15 @@ iterator(0).
 lastDest(10, 10).
 
 // Is the drone actually moving/delivering
-delivering(false). 
+delivering(false).
+
+// Cycles it takes for the drone to fully charge
+chargeT(0).
+
+// Place where the drone recharges
+rechargeLocation(0,0).
+
+//------------------------------------------------------------------------------
 
 // Minden dronnak vissza kell mennie a main depotba csomag felvetelehez
 // A lastDestBol kell vissza menniuk a mainDepotba, majd a main depotbol
@@ -24,7 +36,7 @@ delivering(false).
 
 //------------------------------------------------------------------------------
 +auction(N, X, Y, W)[source(S)] : (.my_name(I))
-	<- ?pos(AgX, AgY); 
+	<-	?pos(AgX, AgY); 
 		?weight(Capacity);
 		?charge(Charge);
 		?speed(Speed);
@@ -39,19 +51,68 @@ delivering(false).
 		
 		// StationX, StationY -> closest (relative to the destination) refueling station's coords
 		// B -> calculated cost
-		calc.calc_cost(LastX, LastY, X, Y, Capacity, W, Charge, Speed, StationX, StationY, Bid, ChargeLeftAfter, ChargeAtX,ChargeAtY,ChargeT);
+		calc.calc_cost(LastX, LastY, X, Y, W, Capacity, Speed, Charge, 0, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
+		//.print("Make route stuff: ", X, " ", Y, " ", ChargeAtX, " ", ChargeAtY, " ", ChargeT);
+		
+		?lastCharge(LC);
+		-lastCharge(LC);
+		+lastCharge(Charge);
+		-charge(Charge);
+		+charge(ChargeLeftAfter);
+		
+		!makeRoute(X, Y, StartX, StartY, ReturnX, ReturnY, ChargeT);
+		
+		.print("Calculated cost: ", Bid);
+		.print("Charge left: ", ChargeLeftAfter);
+		.print("ChargeT ", ChargeT);
+		.send(S, tell, place_bid(N, Bid)).		
+		
++!makeRoute(GoalX, GoalY, StartX, StartY, ReturnX, ReturnY, ChargeT) : (StartX == 10) & (StartY == 10) 
+	<-	?chargeT(C);
+		-chargeT(C);
+		+chargeT(ChargeT);
+		
+		?rechargeLocation(RX, RY);
+		-rechargeLocation(RX, RY);
+		+rechargeLocation(StartX, StartY);
 		
 		?routenr(RouteNr);
 		-routenr(RouteNr);
-		+routenr(RouteNr+2);
+		+routenr(RouteNr+4);
 		
-		+route(RouteNr, X, Y);
+		.print("Start ", StartX, " ", StartY);
+		.print("Goal ", GoalX, " ", GoalY);
+		.print("Return ", ReturnX, " ", ReturnY);
+		
+		+route(RouteNr, StartX, StartY);
+		+route(RouteNr+1, StartX, StartY); // Route duplication so the number of routes to delete is the same
+		+route(RouteNr+2, GoalX, GoalY);
+		+route(RouteNr+3, ReturnX, ReturnY).
+		
++!makeRoute(GoalX, GoalY, StartX, StartY, ReturnX, ReturnX, ChargeT) : not (StartX == 10) |  not (StartY == 10) 
+	<-	?chargeT(C);
+		-chargeT(C);
+		+chargeT(ChargeT);
+		
+		?rechargeLocation(RX, RY);
+		-rechargeLocation(RX, RY);
+		+rechargeLocation(StartX, StartY);
+		
+		?routenr(RouteNr);
+		-routenr(RouteNr);
+		+routenr(RouteNr+4);
+		
+		+route(RouteNr, StartX, StartY);
 		+route(RouteNr+1, 10, 10);
-
+		+route(RouteNr+2, X, Y);
+		+route(RouteNr+3, ReturnX, ReturnY).
 		
-		.print("Calculated cost: ", Bid);
-		.print("ChargeT ", ChargeT);
-		.send(S, tell, place_bid(N, Bid)).		
++!setLastPos : true 
+	<- ?lastDest(LD, LY);
+		-lastDest(LD, LY);
+		?routenr(NR);
+		?route(NR-1, NX, NY);
+		+lastDest(NX, NY).
 		
 // TODO: modositani azt, hogy mi van ha nyer		 
 +winner(N,W)[source(S)] : (.my_name(I) & winner(N,I) & delivering(false)) 
@@ -62,47 +123,82 @@ delivering(false).
 		?route(Iter, NextX, NextY);
 		.print("I WON.... But at what cost?!");
 		!move(Iter, NextX, NextY).
-		/*?next(N, SX, SY);
-		!at(N, SX,SY);
-		.print("Order delivered!").*/
 	
 +winner(N,W)[source(S)] : (.my_name(I) & winner(N,I) & delivering(true)) 
 	<-	!setLastPos;
 		.print("I WON.... But at what cost?!").
 	
-+!setLastPos : true 
-	<- ?lastDest(LD, LY);
-		-lastDest(LD, LY);
-		?routenr(NR);
-		?route(NR-1, NX, NY);
-		+lastDest(NX, NY).
-	
-// TODO: modositani azt, hogy mi van ha nem nyer
-+winner(N,W)[source(S)] : (.my_name(I) & not winner(N,I)) 
-	<- 	?routenr(RouteNr);
-		.print("Route number ", RouteNr);
-		?route(RouteNr-2, DX, DY);
-		.print("Route number ", RouteNr, " Dest: ", DX, " ", DY);
 		
-		-route(RouteNr-2, DX, DY);
-		-route(RouteNr-1, 10, 10);
+// TODO: modositani azt, hogy mi van ha nem nyer
++winner(N,W)[source(S)] : (.my_name(I) & chargeT(C) & not winner(N,I)) 
+	<- 	?charge(Charge);
+		?lastCharge(LC);
+		
+		.print("Charge and lc ", Charge, " ", LC);
+		
+		-charge(Charge);
+		+charge(LC);
+		
+		?routenr(RouteNr);
+		?route(RouteNr-1, AX, AY);
+		?route(RouteNr-2, BX, BY);
+		?route(RouteNr-3, CX, CY);
+		?route(RouteNr-4, DX, DY);
+		
+		-route(RouteNr-4, DX, DY);
+		-route(RouteNr-3, CX, CY);
+		-route(RouteNr-2, BX, BY);
+		-route(RouteNr-1, AX, AY);
+		
 		-routenr(RouteNr);
-		+routenr(RouteNr-2);
+		+routenr(RouteNr-4);
 		.print("I did not win :(").
 	
+		
+// Movement / charge related		
+//------------------------------------------------------------------------------		
++!charge(ChargeT) : (ChargeT == 0) <- true.
++!charge(ChargeT) : not (ChargeT == 0) 
+	<- 	?chargeT(ChargeTime);
+		-chargeT(ChargeTime);
+		+chargeT(ChargeTime-1);
+		
+		-charge(Charge);
+		+charge(100); // Should be temporary
+		
+		!charge(ChargeTime-1).
+		
 +!move(Iter, PX, PY) : pos(PX, PY) & routenr(NR) & (Iter == (NR-1))
 	<-	-delivering(true);
 		+delivering(false);
-		.print("Finished all delivery, awaiting orders").
 		
-+!move(Iter, PX, PY) : pos(PX, PY) & routenr(NR) & not (Iter == (NR-1))
+		//-route(Iter, PX, PY);
+		
+		.print("Finished all delivery, awaiting orders").
+
++!move(Iter, PX, PY) : pos(PX, PY) & chargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
 	<-	-iterator(Iter);
 		+iterator(Iter+1);
+		
+		?chargeT(ChargeTime);
+		!charge(ChargeTime);
+		
+		//-route(Iter, PX, PY);
+		
+		?route(Iter+1, NextX, NextY);
+		!move(Iter+1, NextX, NextY).
+		
++!move(Iter, PX, PY) : pos(PX, PY) & not chargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
+	<-	-iterator(Iter);
+		+iterator(Iter+1);
+		
+		//-route(Iter, PX, PY);
+		
 		?route(Iter+1, NextX, NextY);
 		!move(Iter+1, NextX, NextY).
 		
 +!move(Iter, PX, PY) : not pos(PX, PY)
-	<-	.print("Megyek oda: ", PX, " ", PY);
+	<-	//.print("Megyek oda: ", PX, " ", PY);
 		?pos(AgX, AgY);
 		?speed(Speed);
 		move_towards(AgX, AgY, PX, PY, Speed);

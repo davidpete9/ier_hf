@@ -13,7 +13,7 @@
 MAS ier_hf {
 
     
-    environment: world.DeliveryEnvironment(3,50,yes)
+    environment: world.DeliveryEnvironment(3,200,yes)
 
       agents: 
 	  
@@ -22,10 +22,10 @@ MAS ier_hf {
 		  agentArchClass world.AuctioneerArch;
 	   
 	  
-	  drone
+	  drone1 drone
 	     [mindinspector="gui(cycle,html,history)"]
 	      beliefBaseClass agent.DroneParamsBB("weight(10)","speed(20)","range(50)");
-	 drone
+	  drone2 drone
 	      [mindinspector="gui(cycle,html,history)"]
 	      beliefBaseClass agent.DroneParamsBB("weight(5)","speed(20)","range(5)");
 }          
