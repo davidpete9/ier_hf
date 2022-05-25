@@ -115,13 +115,11 @@ public class DeliveryEnvironment extends jason.environment.Environment {
 
                 addPercept(ag, Literal.parseLiteral("route(" + routeNr + "," + x + "," + y + ")"));
 
-            } else if (action.getFunctor().equals("set_charge")) {
+            } else if (action.getFunctor().equals("set_charge_visual")) {
 
-                int oldCharge = Integer.parseInt(action.getTerm(0).toString());
-                int newCharge = Integer.parseInt(action.getTerm(1).toString());
+                int newCharge = Integer.parseInt(action.getTerm(0).toString());
+              
 
-                removePercept(ag, Literal.parseLiteral("charge(" + oldCharge + ")"));
-                addPercept(ag, Literal.parseLiteral("charge(" + newCharge + ")"));
                 model.updateChargeValue(agId,newCharge);
 
             } else if (action.getFunctor().equals("set_last_charge")) {
