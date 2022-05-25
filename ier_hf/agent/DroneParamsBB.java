@@ -26,7 +26,7 @@ public class DroneParamsBB extends DefaultBeliefBase {
             super.add(arg);
         }
 
-        super.add(Literal.parseLiteral("charge(" + 100 + ")"));
+       /* super.add(Literal.parseLiteral("charge(" + 100 + ")"));
         super.add(Literal.parseLiteral("lastCharge(" + 100 + ")"));
         super.add(Literal.parseLiteral("routenr(" + 0 + ")"));
         super.add(Literal.parseLiteral("iterator(" + 0 + ")"));
@@ -35,7 +35,7 @@ public class DroneParamsBB extends DefaultBeliefBase {
         super.add(Literal.parseLiteral("chargeT(" + 0 + ")"));
         super.add(Literal.parseLiteral("rechargeLocation(" + 0 + "," + 0 + ")"));
         super.add(Literal.parseLiteral("baseTime(" + 0 + ")"));
-        super.add(Literal.parseLiteral("lastBaseTime(" + 0 + ")"));
+        super.add(Literal.parseLiteral("lastBaseTime(" + 0 + ")"));*/
     }
 
 }

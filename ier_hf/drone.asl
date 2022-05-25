@@ -1,6 +1,6 @@
 /*Initial beliefs*/
 // Current charge, its value lies between 0 and 100
-/*charge(100).
+charge(100).
 
 // Last charge - in case this drone does not win the auction
 lastCharge(100).
@@ -26,7 +26,7 @@ rechargeLocation(0,0).
 // Base time
 baseTime(0).
 
-lastBaseTime(0).*/
+lastBaseTime(0).
 
 //------------------------------------------------------------------------------
 
@@ -58,133 +58,114 @@ lastBaseTime(0).*/
 		// StationX, StationY -> closest (relative to the destination) refueling station's coords
 		// B -> calculated cost
 		calc.calc_cost(LastX, LastY, X, Y, W, Capacity, Speed, Charge, BaseTime, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
-		//.print("Make route stuff: ", X, " ", Y, " ", ChargeAtX, " ", ChargeAtY, " ", ChargeT);
-		
-		?lastBaseTime(LB);
-		set_last_basetime(LB, BaseTime);
-		set_basetime(BaseTime, BaseTime + Bid);
-		
-		?lastCharge(LC);
-		set_last_charge(LC, Charge);
-		set_charge(Charge, ChargeLeftAfter);
-		
-		!makeRoute(X, Y, StartX, StartY, ReturnX, ReturnY, ChargeT);
-		
-		?routenr(NR);
-		+auctionRouteNr(N, NR);
+		+auctionData(N, X, Y, W, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
 		
 		.print("Calculated cost: ", Bid);
 		.print("Charge left: ", ChargeLeftAfter);
 		.print("ChargeT ", ChargeT);
 		.send(S, tell, place_bid(N, Bid)).		
 		
-+!makeRoute(GoalX, GoalY, StartX, StartY, ReturnX, ReturnY, ChargeT) : (StartX == 10) & (StartY == 10) 
-	<-	?chargeT(C);
-		set_charget(C, ChargeT);
+		
++!makeRoute(N) : true
+	<-	.print("Making a route!");
+		?auctionData(N, GoalX, GoalY, Weight, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
+		
+		?baseTime(BaseTime);	
+		?lastBaseTime(LB);
+		-lastBaseTime(LB);
+		+lastBaseTime(BaseTime);
+		
+		-baseTime(BaseTime);
+		+baseTime(BaseTime + Bid);
+		
+		?charge(Charge);
+		?lastCharge(LC);
+		-lastCharge(LC);
+		+lastCharge(Charge);
+		-charge(Charge);
+		+charge(ChargeLeftAfter);
+	
+		?chargeT(C);
+		-chargeT(C);
+		+chargeT(ChargeT);
 		
 		?rechargeLocation(RX, RY);
-		set_rechargelocation(RX, RY, StartX, StartY);
+		-rechargeLocation(RX, RY);
+		+rechargeLocation(StartX, StartY);
 		
 		?routenr(RouteNr);
-		set_routenr(RouteNr, RouteNr + 4);
+		-routenr(RouteNr);
+		+routenr(RouteNr+4);
 		
-		.print("Start ", StartX, " ", StartY);
-		.print("Goal ", GoalX, " ", GoalY);
-		.print("Return ", ReturnX, " ", ReturnY);
+		+route(RouteNr, StartX, StartY);
+		+route(RouteNr+1, 10, 10);
+		+route(RouteNr+2, GoalX, GoalY);
+		+route(RouteNr+3, ReturnX, ReturnY).
 		
-		add_route(RouteNr, StartX, StartY);
-		add_route(RouteNr+1, StartX, StartY); // Route duplication so the number of routes to delete is the same
-		add_route(RouteNr+2, GoalX, GoalY);
-		add_route(RouteNr+3, ReturnX, ReturnY).
-		
-+!makeRoute(GoalX, GoalY, StartX, StartY, ReturnX, ReturnX, ChargeT) : not (StartX == 10) |  not (StartY == 10) 
-	<-	?chargeT(C);
-		set_charget(C, ChargeT);
-		
-		?rechargeLocation(RX, RY);
-		set_rechargelocation(RX, RY, StartX, StartY);
-
-		?routenr(RouteNr);
-		set_routenr(RouteNr, RouteNr + 4);
-		
-		add_route(RouteNr, StartX, StartY);
-		add_route(RouteNr+1, 10, 10);
-		add_route(RouteNr+2, X, Y);
-		add_route(RouteNr+3, ReturnX, ReturnY).
-		
-+!setLastPos(N) : true 
++!setLastPos : true 
 	<- ?lastDest(LD, LY);
-		//-lastDest(LD, LY);
-		?auctionRouteNr(N, NR);
-		.print("Route nr, for debugging purposes: ", NR, " and routenr-1: ", NR-1);
+		-lastDest(LD, LY);
+		?routenr(NR);
 		?route(NR-1, NX, NY);
-		set_last_dest(LD, LY, NX, NY).
-		//+lastDest(NX, NY).
+		+lastDest(NX, NY).
 		
 // TODO: modositani azt, hogy mi van ha nyer		 
 +winner(N,W)[source(S)] : (.my_name(I) & winner(N,I) & delivering(false)) 
-	<-	!setLastPos(N);
-		set_delivering(true);
+	<-	!makeRoute(N);
+		!setLastPos;
+		-delivering(false);
+		+delivering(true);
 		?iterator(Iter);
 		?route(Iter, NextX, NextY);
 		.print("I WON.... But at what cost?!");
 		!move(Iter, NextX, NextY).
 	
 +winner(N,W)[source(S)] : (.my_name(I) & winner(N,I) & delivering(true)) 
-	<-	!setLastPos(N);
+	<-	!makeRoute(N);
+		!setLastPos;
 		.print("I WON.... But at what cost?!").
 	
 		
 // TODO: modositani azt, hogy mi van ha nem nyer
 +winner(N,W)[source(S)] : (.my_name(I) & chargeT(C) & not winner(N,I)) 
-	<- 	?charge(Charge);
-		?lastCharge(LC);
-		?baseTime(BT);
-		?lastBaseTime(LBT);
-		
-		.print("Charge and lc ", Charge, " ", LC);
-		
-		set_basetime(BT, LBT);
-		set_charge(Charge, LC);
-		
-		//?routenr(RouteNr);
-		?auctionRouteNr(N, RouteNr);
-		
-		.print("Route number: ", RouteNr);
-		?route(RouteNr-1, AX, AY);
-		?route(RouteNr-2, BX, BY);
-		?route(RouteNr-3, CX, CY);
-		?route(RouteNr-4, DX, DY);
-		
-		delete_route(RouteNr-4, DX, DY);
-		delete_route(RouteNr-3, CX, CY);
-		delete_route(RouteNr-2, BX, BY);
-		delete_route(RouteNr-1, AX, AY);
-		set_routenr(RouteNr, RouteNr - 4);
-		.print("I did not win :(").
+	<- 	.print("I did not win :(").
 	
 		
 // Movement / charge related		
 //------------------------------------------------------------------------------		
++!autocharge: delivering(true) | (charge(C) & C >= 100)
+  <- true.
+
++!autocharge: delivering(false) & charge(C) & C < 100
+  <- set_charge(C,C+1);
+     !autocharge.
+
 +!charge(ChargeT) : (ChargeT == 0) <- true.
 +!charge(ChargeT) : not (ChargeT == 0) 
 	<- 	!lowerBaseTime;
 		.print("CHARGING TIME BABY");
 		?chargeT(ChargeTime);
-		set_charget(ChargeTime, ChargeTime-1);
+		-chargeT(ChargeTime);
+		+chargeT(ChargeTime-1);
 		
-		set_charge(Charge, 100);// Should be temporary
+		-charge(Charge);
+		+charge(100); // Should be temporary
 		
 		!charge(ChargeTime-1).
 		
 +!move(Iter, PX, PY) : pos(PX, PY) & routenr(NR) & (Iter == (NR-1))
 	<-	!lowerBaseTime;
-		set_delivering(false);
+		-delivering(true);
+		+delivering(false);
+		!autocharge;
+		//-route(Iter, PX, PY);
+		
 		.print("Finished all delivery, awaiting orders").
 
 +!move(Iter, PX, PY) : pos(PX, PY) & rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
 	<-	!lowerBaseTime;
-		set_iterator(Iter, Iter+1);
+		-iterator(Iter);
+		+iterator(Iter+1);
 		
 		?chargeT(ChargeTime);
 		!charge(ChargeTime);
@@ -196,7 +177,8 @@ lastBaseTime(0).*/
 		
 +!move(Iter, PX, PY) : pos(PX, PY) & not rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
 	<-	!lowerBaseTime;
-		set_iterator(Iter, Iter+1);
+		-iterator(Iter);
+		+iterator(Iter+1);
 		
 		//-route(Iter, PX, PY);
 		
@@ -212,7 +194,10 @@ lastBaseTime(0).*/
 		!move(Iter, PX, PY).
 		
 +!lowerBaseTime : baseTime(BT) & (BT > 0) 
-	<- 	set_basetime(BT, BT-1).
+	<- 	?baseTime(BT);
+		-baseTime(BT);
+		+baseTime(BT-1);
+		true.
 		
 +!lowerBaseTime : baseTime(BT) & (BT <= 0) 
 	<- 	true.
