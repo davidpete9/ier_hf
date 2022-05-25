@@ -97,10 +97,117 @@ public class DeliveryEnvironment extends jason.environment.Environment {
 
                 removePercept(ag, Literal.parseLiteral("pos(" + agX + "," + agY + ")"));
                 addPercept(ag, Literal.parseLiteral("pos(" + nextX + "," + nextY  + ")"));
-
-                return true;
                 //logger.warning(action.toString());
+
+            } else if (action.getFunctor().equals("delete_route")) {
+
+                int routeNr = Integer.parseInt(action.getTerm(0).toString());
+                int x = Integer.parseInt(action.getTerm(1).toString());
+                int y = Integer.parseInt(action.getTerm(2).toString());
+
+                removePercept(ag, Literal.parseLiteral("route(" + routeNr + "," + x + "," + y + ")"));
+
+            } else if (action.getFunctor().equals("add_route")) {
+
+                int routeNr = Integer.parseInt(action.getTerm(0).toString());
+                int x = Integer.parseInt(action.getTerm(1).toString());
+                int y = Integer.parseInt(action.getTerm(2).toString());
+
+                addPercept(ag, Literal.parseLiteral("route(" + routeNr + "," + x + "," + y + ")"));
+
+            } else if (action.getFunctor().equals("set_charge")) {
+
+                logger.warning("We got to the reset thingy");
+                int oldCharge = Integer.parseInt(action.getTerm(0).toString());
+                int newCharge = Integer.parseInt(action.getTerm(1).toString());
+
+                removePercept(ag, Literal.parseLiteral("charge(" + oldCharge + ")"));
+                addPercept(ag, Literal.parseLiteral("charge(" + newCharge + ")"));
+
+            } else if (action.getFunctor().equals("set_last_charge")) {
+
+                int oldCharge = Integer.parseInt(action.getTerm(0).toString());
+                int newCharge = Integer.parseInt(action.getTerm(1).toString());
+
+                removePercept(ag, Literal.parseLiteral("lastCharge(" + oldCharge + ")"));
+                addPercept(ag, Literal.parseLiteral("lastCharge(" + newCharge + ")"));
+
+            } else if (action.getFunctor().equals("set_basetime")) {
+
+                logger.warning("reset_basetime bby");
+                int oldBT = Integer.parseInt(action.getTerm(0).toString());
+                int newBT = Integer.parseInt(action.getTerm(1).toString());
+
+                removePercept(ag, Literal.parseLiteral("baseTime(" + oldBT + ")"));
+                addPercept(ag, Literal.parseLiteral("baseTime(" + newBT + ")"));
+
+            } else if (action.getFunctor().equals("set_last_dest")) {
+
+                logger.warning("last dest bby");
+                int oldX = Integer.parseInt(action.getTerm(0).toString());
+                int oldY = Integer.parseInt(action.getTerm(1).toString());
+
+                int newX = Integer.parseInt(action.getTerm(2).toString());
+                int newY = Integer.parseInt(action.getTerm(3).toString());
+                logger.warning("Old pos: " + oldX + " " + oldY + " new pos: " + newX + " " + newY);
+
+                removePercept(ag, Literal.parseLiteral("lastDest(" + oldX + "," + oldY + ")"));
+                addPercept(ag, Literal.parseLiteral("lasDest(" + newX + "," + newY  + ")"));
+
+            } else if (action.getFunctor().equals("set_delivering")) {
+
+                Boolean val = Boolean.parseBoolean(action.getTerm(0).toString());
+
+                removePercept(ag, Literal.parseLiteral("delivering(" + !val + ")"));
+                addPercept(ag, Literal.parseLiteral("delivering(" + val + ")"));
+
+            } else if (action.getFunctor().equals("set_last_basetime")) {
+
+                int oldBT = Integer.parseInt(action.getTerm(0).toString());
+                int newBT = Integer.parseInt(action.getTerm(1).toString());
+
+                removePercept(ag, Literal.parseLiteral("lastBaseTime(" + oldBT + ")"));
+                addPercept(ag, Literal.parseLiteral("lastBaseTime(" + newBT + ")"));
+
+            } else if (action.getFunctor().equals("set_routenr")) {
+
+                int oldNr = Integer.parseInt(action.getTerm(0).toString());
+                int newNr = Integer.parseInt(action.getTerm(1).toString());
+
+                removePercept(ag, Literal.parseLiteral("routenr(" + oldNr + ")"));
+                addPercept(ag, Literal.parseLiteral("routenr(" + newNr + ")"));
+
+            } else if (action.getFunctor().equals("set_iterator")) {
+
+                int oldIt = Integer.parseInt(action.getTerm(0).toString());
+                int newIt = Integer.parseInt(action.getTerm(1).toString());
+
+                removePercept(ag, Literal.parseLiteral("iterator(" + oldIt + ")"));
+                addPercept(ag, Literal.parseLiteral("iterator(" + newIt + ")"));
+
+            } else if (action.getFunctor().equals("set_charget")) {
+
+                int oldC = Integer.parseInt(action.getTerm(0).toString());
+                int newC = Integer.parseInt(action.getTerm(1).toString());
+
+                removePercept(ag, Literal.parseLiteral("chargeT(" + oldC + ")"));
+                addPercept(ag, Literal.parseLiteral("chargeT(" + newC + ")"));
+
+            } else if (action.getFunctor().equals("set_rechargelocation")) {
+
+                int oldX = Integer.parseInt(action.getTerm(0).toString());
+                int oldY = Integer.parseInt(action.getTerm(1).toString());
+
+                int newX = Integer.parseInt(action.getTerm(2).toString());
+                int newY = Integer.parseInt(action.getTerm(3).toString());
+                //logger.warning("Old pos: " + oldX + " " + oldY + " new pos: " + newX + " " + newY);
+
+                removePercept(ag, Literal.parseLiteral("rechargeLocation(" + oldX + "," + oldY + ")"));
+                addPercept(ag, Literal.parseLiteral("rechargeLocation(" + newX + "," + newY  + ")"));
+
             }
+
+            return true;
             /*
             // get the agent id based on its name
             int agId = getAgIdBasedOnName(ag);
@@ -123,10 +230,10 @@ public class DeliveryEnvironment extends jason.environment.Environment {
             } else {
                 logger.info("executing: " + action + ", but not implemented!");
             }*/
-            if (result) {
+            /*if (result) {
                 //updateAgPercept(agId);
                 return true;
-            }
+            }*/
         } catch (InterruptedException e) {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "error executing " + action + " for " + ag, e);
