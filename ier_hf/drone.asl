@@ -61,17 +61,12 @@ lastBaseTime(0).
 		//.print("Make route stuff: ", X, " ", Y, " ", ChargeAtX, " ", ChargeAtY, " ", ChargeT);
 		
 		?lastBaseTime(LB);
-		-lastBaseTime(LB);
-		+lastBaseTime(BaseTime);
-		
-		-baseTime(BaseTime);
-		+baseTime(BaseTime + Bid);
+		set_last_basetime(LB, BaseTime);
+		set_basetime(BaseTime, BaseTime + Bid);
 		
 		?lastCharge(LC);
-		-lastCharge(LC);
-		+lastCharge(Charge);
-		-charge(Charge);
-		+charge(ChargeLeftAfter);
+		set_last_charge(LC, Charge);
+		set_charge(Charge, ChargeLeftAfter);
 		
 		!makeRoute(X, Y, StartX, StartY, ReturnX, ReturnY, ChargeT);
 		
@@ -82,56 +77,51 @@ lastBaseTime(0).
 		
 +!makeRoute(GoalX, GoalY, StartX, StartY, ReturnX, ReturnY, ChargeT) : (StartX == 10) & (StartY == 10) 
 	<-	?chargeT(C);
-		-chargeT(C);
-		+chargeT(ChargeT);
+		set_charget(C, ChargeT);
 		
 		?rechargeLocation(RX, RY);
-		-rechargeLocation(RX, RY);
-		+rechargeLocation(StartX, StartY);
+		set_rechargelocation(RX, RY, StartX, StartY);
 		
 		?routenr(RouteNr);
-		-routenr(RouteNr);
-		+routenr(RouteNr+4);
+		set_routenr(RouteNr, RouteNr + 4);
 		
 		.print("Start ", StartX, " ", StartY);
 		.print("Goal ", GoalX, " ", GoalY);
 		.print("Return ", ReturnX, " ", ReturnY);
 		
-		+route(RouteNr, StartX, StartY);
-		+route(RouteNr+1, StartX, StartY); // Route duplication so the number of routes to delete is the same
-		+route(RouteNr+2, GoalX, GoalY);
-		+route(RouteNr+3, ReturnX, ReturnY).
+		add_route(RouteNr, StartX, StartY);
+		add_route(RouteNr+1, StartX, StartY); // Route duplication so the number of routes to delete is the same
+		add_route(RouteNr+2, GoalX, GoalY);
+		add_route(RouteNr+3, ReturnX, ReturnY).
 		
 +!makeRoute(GoalX, GoalY, StartX, StartY, ReturnX, ReturnX, ChargeT) : not (StartX == 10) |  not (StartY == 10) 
 	<-	?chargeT(C);
-		-chargeT(C);
-		+chargeT(ChargeT);
+		set_charget(C, ChargeT);
 		
 		?rechargeLocation(RX, RY);
-		-rechargeLocation(RX, RY);
-		+rechargeLocation(StartX, StartY);
-		
+		set_rechargelocation(RX, RY, StartX, StartY);
+
 		?routenr(RouteNr);
-		-routenr(RouteNr);
-		+routenr(RouteNr+4);
+		set_routenr(RouteNr, RouteNr + 4);
 		
-		+route(RouteNr, StartX, StartY);
-		+route(RouteNr+1, 10, 10);
-		+route(RouteNr+2, X, Y);
-		+route(RouteNr+3, ReturnX, ReturnY).
+		add_route(RouteNr, StartX, StartY);
+		add_route(RouteNr+1, 10, 10);
+		add_route(RouteNr+2, X, Y);
+		add_route(RouteNr+3, ReturnX, ReturnY).
 		
 +!setLastPos : true 
 	<- ?lastDest(LD, LY);
-		-lastDest(LD, LY);
+		//-lastDest(LD, LY);
 		?routenr(NR);
+		.print("Route nr, for debugging purposes: ", NR, " and routenr-1: ", NR-1);
 		?route(NR-1, NX, NY);
-		+lastDest(NX, NY).
+		set_last_dest(LD, LY, NX, NY).
+		//+lastDest(NX, NY).
 		
 // TODO: modositani azt, hogy mi van ha nyer		 
 +winner(N,W)[source(S)] : (.my_name(I) & winner(N,I) & delivering(false)) 
 	<-	!setLastPos;
-		-delivering(false);
-		+delivering(true);
+		set_delivering(true);
 		?iterator(Iter);
 		?route(Iter, NextX, NextY);
 		.print("I WON.... But at what cost?!");
@@ -151,25 +141,21 @@ lastBaseTime(0).
 		
 		.print("Charge and lc ", Charge, " ", LC);
 		
-		-charge(Charge);
-		+charge(LC);
-		
-		-baseTime(LB);
-		+baseTime(LBT);
+		set_basetime(BT, LBT);
+		set_charge(Charge, LC);
 		
 		?routenr(RouteNr);
+		.print("Route number: ", RouteNr);
 		?route(RouteNr-1, AX, AY);
 		?route(RouteNr-2, BX, BY);
 		?route(RouteNr-3, CX, CY);
 		?route(RouteNr-4, DX, DY);
 		
-		-route(RouteNr-4, DX, DY);
-		-route(RouteNr-3, CX, CY);
-		-route(RouteNr-2, BX, BY);
-		-route(RouteNr-1, AX, AY);
-		
-		-routenr(RouteNr);
-		+routenr(RouteNr-4);
+		delete_route(RouteNr-4, DX, DY);
+		delete_route(RouteNr-3, CX, CY);
+		delete_route(RouteNr-2, BX, BY);
+		delete_route(RouteNr-1, AX, AY);
+		set_routenr(RouteNr, RouteNr - 4);
 		.print("I did not win :(").
 	
 		
@@ -180,27 +166,20 @@ lastBaseTime(0).
 	<- 	!lowerBaseTime;
 		.print("CHARGING TIME BABY");
 		?chargeT(ChargeTime);
-		-chargeT(ChargeTime);
-		+chargeT(ChargeTime-1);
+		set_charget(ChargeTime, ChargeTime-1);
 		
-		-charge(Charge);
-		+charge(100); // Should be temporary
+		set_charge(Charge, 100);// Should be temporary
 		
 		!charge(ChargeTime-1).
 		
 +!move(Iter, PX, PY) : pos(PX, PY) & routenr(NR) & (Iter == (NR-1))
 	<-	!lowerBaseTime;
-		-delivering(true);
-		+delivering(false);
-		
-		//-route(Iter, PX, PY);
-		
+		set_delivering(false);
 		.print("Finished all delivery, awaiting orders").
 
 +!move(Iter, PX, PY) : pos(PX, PY) & rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
 	<-	!lowerBaseTime;
-		-iterator(Iter);
-		+iterator(Iter+1);
+		set_iterator(Iter, Iter+1);
 		
 		?chargeT(ChargeTime);
 		!charge(ChargeTime);
@@ -212,8 +191,7 @@ lastBaseTime(0).
 		
 +!move(Iter, PX, PY) : pos(PX, PY) & not rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
 	<-	!lowerBaseTime;
-		-iterator(Iter);
-		+iterator(Iter+1);
+		set_iterator(Iter, Iter+1);
 		
 		//-route(Iter, PX, PY);
 		
@@ -229,10 +207,7 @@ lastBaseTime(0).
 		!move(Iter, PX, PY).
 		
 +!lowerBaseTime : baseTime(BT) & (BT > 0) 
-	<- 	/*?baseTime(BT);
-		-baseTime(BT);
-		+baseTime(BT-1);*/
-		true.
+	<- 	set_basetime(BT, BT-1).
 		
 +!lowerBaseTime : baseTime(BT) & (BT <= 0) 
 	<- 	true.
