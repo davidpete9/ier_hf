@@ -25,8 +25,6 @@ public class DroneParamsBB extends DefaultBeliefBase {
             logger.warning(arg.toString());
             super.add(arg);
         }
-
-
     }
 
 }
