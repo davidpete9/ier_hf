@@ -30,6 +30,8 @@ public class WorldModel extends GridWorldModel {
     List<Location> depots = new ArrayList<Location>();
 
     List<Location> villages =  new ArrayList<Location>();
+    
+    List<Integer> chargeValues = new ArrayList<Integer>();
 
     // singleton pattern
     protected static WorldModel model = null;
@@ -93,6 +95,7 @@ public class WorldModel extends GridWorldModel {
         
          for (int i = 0; i < this.nbAgs; i++) {
           setAgPos(i, mainDepot.x,mainDepot.y	);
+          this.chargeValues.add(100);
         }
         return model;
 
@@ -101,10 +104,16 @@ public class WorldModel extends GridWorldModel {
     public void fly(Location dest, int agId) {
         setAgPos(agId, dest);
 
-        view.update(mainDepot.x, mainDepot.y);
+        //view.update(mainDepot.x, mainDepot.y);
         view.repaint();
 
         return;
     }
+    
+    public void updateChargeValue(int agId, int chargeValue) {
+    	this.chargeValues.set(agId,chargeValue);	
+    }
+    
+    public List<Integer> getChargeValues() {return this.chargeValues;}
 
 }
