@@ -17,12 +17,10 @@ public class get_charge extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
 
-        int capacity = (int) ((NumberTerm) terms[0]).solve();
-        int weight = (int) ((NumberTerm) terms[1]).solve(); 
-        int chargeValue = (int) ((NumberTerm) terms[2]).solve(); 
+        int chargeValue = (int) ((NumberTerm) terms[0]).solve(); 
 
         int energy = ChargeHelper.getChargePerTime();
 
-        return un.unifies(terms[3], new NumberTermImpl(chargeValue+energy));
+        return un.unifies(terms[1], new NumberTermImpl(chargeValue+energy));
     }
 }

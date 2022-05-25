@@ -135,11 +135,11 @@ lastBaseTime(0).
   <-   true.
 
 +!autocharge: delivering(false) & charge(C) & (C < 100)
-  <- set_charge_visual(C+1);
-     -charge(C);
-	 +charge(C+1);
+  <- -charge(C);
+	 calc.get_charge(C,NewC);
+	 +charge(NewC);
+	 set_charge_visual(NewC);
      !autocharge.
-//>>>>>>> ec8940afcb5f31083e22daf339f3f882a7fcd5bf
 
 +!charge(ChargeT) : (ChargeT <= 0) <- true.
 +!charge(ChargeT) : (ChargeT > 0) 
@@ -150,8 +150,9 @@ lastBaseTime(0).
 		.print("CHARGING TIME BABY ", ChargeTime);
 		
 		-charge(Charge);
-		+charge(Charge+1); // Should be temporary
-		set_charge_visual(Charge+1);
+		calc.get_charge(Charge,NewC);
+		+charge(NewC); // Should be temporary
+		set_charge_visual(NewC);
 		!charge(ChargeTime-1).
 		
 +!move(Iter, PX, PY) : pos(PX, PY) & routenr(NR) & (Iter == (NR-1))
