@@ -166,6 +166,14 @@ lastBaseTime(0).*/
 		
 // Movement / charge related		
 //------------------------------------------------------------------------------		
+
++!autocharge: delivering(true) | (charge(C) & C >= 100)
+  <- true.
+
++!autocharge: delivering(false) & charge(C) & C < 100
+  <- set_charge(C,C+1);
+     !autocharge.
+
 +!charge(ChargeT) : (ChargeT == 0) <- true.
 +!charge(ChargeT) : not (ChargeT == 0) 
 	<- 	!lowerBaseTime;
@@ -180,6 +188,7 @@ lastBaseTime(0).*/
 +!move(Iter, PX, PY) : pos(PX, PY) & routenr(NR) & (Iter == (NR-1))
 	<-	!lowerBaseTime;
 		set_delivering(false);
+		!autocharge;
 		.print("Finished all delivery, awaiting orders").
 
 +!move(Iter, PX, PY) : pos(PX, PY) & rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
