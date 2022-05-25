@@ -84,6 +84,7 @@ lastBaseTime(0).
 		+lastCharge(Charge);
 		-charge(Charge);
 		+charge(ChargeLeftAfter);
+		set_charge_visual(ChargeLeftAfter);
 	
 		?chargeT(C);
 		-chargeT(C);
@@ -133,15 +134,14 @@ lastBaseTime(0).
 		
 // Movement / charge related		
 //------------------------------------------------------------------------------		
-<<<<<<< HEAD
-=======
 
->>>>>>> b2634ecd937a56e7f365a0a105ab5751a9e427cb
-+!autocharge: delivering(true) | (charge(C) & C >= 100)
-  <- true.
++!autocharge: delivering(true) | not (charge(C) & C < 100)
+  <-   true.
 
 +!autocharge: delivering(false) & charge(C) & C < 100
-  <- set_charge(C,C+1);
+  <- set_charge_visual(C+1);
+     -charge(C);
+	 +charge(C+1);
      !autocharge.
 
 +!charge(ChargeT) : (ChargeT == 0) <- true.
@@ -154,16 +154,16 @@ lastBaseTime(0).
 		
 		-charge(Charge);
 		+charge(100); // Should be temporary
-		
+		set_charge_visual(100);
 		!charge(ChargeTime-1).
 		
-+!move(Iter, PX, PY) : pos(PX, PY) & routenr(NR) & (Iter == (NR-1))
++!move(Iter, PX, PY) : pos(PX, PY) & routenr(NR) & (Iter == (NR-1)) & charge(C)
 	<-	!lowerBaseTime;
 		-delivering(true);
 		+delivering(false);
 		!autocharge;
 		//-route(Iter, PX, PY);
-		.print("Finished all delivery, awaiting orders").
+		.print("Finished all delivery, awaiting orders ",C).
 
 +!move(Iter, PX, PY) : pos(PX, PY) & rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
 	<-	!lowerBaseTime;
