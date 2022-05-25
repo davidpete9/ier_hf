@@ -117,12 +117,12 @@ public class DeliveryEnvironment extends jason.environment.Environment {
 
             } else if (action.getFunctor().equals("set_charge")) {
 
-                logger.warning("We got to the reset thingy");
                 int oldCharge = Integer.parseInt(action.getTerm(0).toString());
                 int newCharge = Integer.parseInt(action.getTerm(1).toString());
 
                 removePercept(ag, Literal.parseLiteral("charge(" + oldCharge + ")"));
                 addPercept(ag, Literal.parseLiteral("charge(" + newCharge + ")"));
+                model.updateChargeValue(agId,newCharge);
 
             } else if (action.getFunctor().equals("set_last_charge")) {
 
@@ -134,7 +134,6 @@ public class DeliveryEnvironment extends jason.environment.Environment {
 
             } else if (action.getFunctor().equals("set_basetime")) {
 
-                logger.warning("reset_basetime bby");
                 int oldBT = Integer.parseInt(action.getTerm(0).toString());
                 int newBT = Integer.parseInt(action.getTerm(1).toString());
 

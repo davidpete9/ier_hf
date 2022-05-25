@@ -45,6 +45,7 @@ public class WorldView extends GridWorldView {
                 drawMainDepot(g, x, y);
                 break;
         }
+        
     }
 
     public void drawDepot(Graphics g, int x, int y) {
@@ -99,6 +100,7 @@ public class WorldView extends GridWorldView {
         c = Color.yellow;
         super.drawAgent(g, x, y, c, -1);
         g.setColor(Color.black);
-        super.drawString(g, x, y, defaultFont, "Drón"+id);
+        int chargeValue = hmodel.getChargeValues().get(id);
+        super.drawString(g, x, y, defaultFont, "Drón"+id+" ("+chargeValue+")");
     }
 }
