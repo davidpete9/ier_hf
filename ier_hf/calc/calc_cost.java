@@ -73,6 +73,18 @@ public class calc_cost extends DefaultInternalAction {
         
         
 
+	if (itemWeight > cargoCapacity) {
+	ts.getLogger().info("Nem tudja elvinni a dron, tul nagy a csomag.");
+	un.unifies(terms[9], new NumberTermImpl(10));//ReturnAtX
+	un.unifies(terms[10], new NumberTermImpl(10)); //ReturnAtY
+	un.unifies(terms[11], new NumberTermImpl(maxBid));
+	un.unifies(terms[12], new NumberTermImpl(0));
+	un.unifies(terms[13], new NumberTermImpl(10)); //StartAtX
+	un.unifies(terms[14], new NumberTermImpl(10)); //StartAtY
+        return un.unifies(terms[15], new NumberTermImpl(0)); 
+	}
+	
+
 	// Drone has this information in it's belief base, but it is simpler to query this way.
         WorldModel model = WorldModel.get();
         ArrayList<Location> refuelStations = new ArrayList<Location>();
@@ -86,6 +98,9 @@ public class calc_cost extends DefaultInternalAction {
         //  1. Path cost to mainDepot (no cargo) (if not there)
         //  2. Path from mainDepot to destination 
         //  3. From destionation go back to main depot. (or )
+        
+        
+        
         
         
         
@@ -106,7 +121,7 @@ public class calc_cost extends DefaultInternalAction {
         int full_cost = baseTime+to_maindepot+from_depot_to_goal;
         ts.getLogger().info(" main to goalll..."+get_dist(main.x, main.y, goalX, goalY));
         
-       ts.getLogger().info("full cost: "+full_cost);
+        ts.getLogger().info("full cost: "+full_cost);
         
         if (chargeWillBe - chargeCost > 0) { //1. OK. No need to charge, it can go back to main AFTER the order!
         	        ts.getLogger().info("option 1, main-main no charge");
