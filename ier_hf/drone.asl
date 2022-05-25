@@ -1,6 +1,6 @@
 /*Initial beliefs*/
 // Current charge, its value lies between 0 and 100
-charge(100).
+/*charge(100).
 
 // Last charge - in case this drone does not win the auction
 lastCharge(100).
@@ -26,7 +26,7 @@ rechargeLocation(0,0).
 // Base time
 baseTime(0).
 
-lastBaseTime(0).
+lastBaseTime(0).*/
 
 //------------------------------------------------------------------------------
 
@@ -70,6 +70,9 @@ lastBaseTime(0).
 		
 		!makeRoute(X, Y, StartX, StartY, ReturnX, ReturnY, ChargeT);
 		
+		?routenr(NR);
+		+auctionRouteNr(N, NR);
+		
 		.print("Calculated cost: ", Bid);
 		.print("Charge left: ", ChargeLeftAfter);
 		.print("ChargeT ", ChargeT);
@@ -109,10 +112,10 @@ lastBaseTime(0).
 		add_route(RouteNr+2, X, Y);
 		add_route(RouteNr+3, ReturnX, ReturnY).
 		
-+!setLastPos : true 
++!setLastPos(N) : true 
 	<- ?lastDest(LD, LY);
 		//-lastDest(LD, LY);
-		?routenr(NR);
+		?auctionRouteNr(N, NR);
 		.print("Route nr, for debugging purposes: ", NR, " and routenr-1: ", NR-1);
 		?route(NR-1, NX, NY);
 		set_last_dest(LD, LY, NX, NY).
@@ -120,7 +123,7 @@ lastBaseTime(0).
 		
 // TODO: modositani azt, hogy mi van ha nyer		 
 +winner(N,W)[source(S)] : (.my_name(I) & winner(N,I) & delivering(false)) 
-	<-	!setLastPos;
+	<-	!setLastPos(N);
 		set_delivering(true);
 		?iterator(Iter);
 		?route(Iter, NextX, NextY);
@@ -128,7 +131,7 @@ lastBaseTime(0).
 		!move(Iter, NextX, NextY).
 	
 +winner(N,W)[source(S)] : (.my_name(I) & winner(N,I) & delivering(true)) 
-	<-	!setLastPos;
+	<-	!setLastPos(N);
 		.print("I WON.... But at what cost?!").
 	
 		
@@ -144,7 +147,9 @@ lastBaseTime(0).
 		set_basetime(BT, LBT);
 		set_charge(Charge, LC);
 		
-		?routenr(RouteNr);
+		//?routenr(RouteNr);
+		?auctionRouteNr(N, RouteNr);
+		
 		.print("Route number: ", RouteNr);
 		?route(RouteNr-1, AX, AY);
 		?route(RouteNr-2, BX, BY);

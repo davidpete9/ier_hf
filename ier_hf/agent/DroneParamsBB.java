@@ -25,6 +25,17 @@ public class DroneParamsBB extends DefaultBeliefBase {
             logger.warning(arg.toString());
             super.add(arg);
         }
+
+        super.add(Literal.parseLiteral("charge(" + 100 + ")"));
+        super.add(Literal.parseLiteral("lastCharge(" + 100 + ")"));
+        super.add(Literal.parseLiteral("routenr(" + 0 + ")"));
+        super.add(Literal.parseLiteral("iterator(" + 0 + ")"));
+        super.add(Literal.parseLiteral("delivering(" + false + ")"));
+        super.add(Literal.parseLiteral("lastDest(" + 10 + "," + 10 + ")"));
+        super.add(Literal.parseLiteral("chargeT(" + 0 + ")"));
+        super.add(Literal.parseLiteral("rechargeLocation(" + 0 + "," + 0 + ")"));
+        super.add(Literal.parseLiteral("baseTime(" + 0 + ")"));
+        super.add(Literal.parseLiteral("lastBaseTime(" + 0 + ")"));
     }
 
 }
