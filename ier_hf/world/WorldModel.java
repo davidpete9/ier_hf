@@ -111,7 +111,7 @@ public class WorldModel extends GridWorldModel {
     }
     
     public void updateChargeValue(int agId, int chargeValue) {
-    	this.chargeValues.set(agId,chargeValue);
+        this.chargeValues.set(agId,chargeValue);
     	view.repaint();
     }
     

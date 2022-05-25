@@ -133,6 +133,10 @@ lastBaseTime(0).
 		
 // Movement / charge related		
 //------------------------------------------------------------------------------		
+<<<<<<< HEAD
+=======
+
+>>>>>>> b2634ecd937a56e7f365a0a105ab5751a9e427cb
 +!autocharge: delivering(true) | (charge(C) & C >= 100)
   <- true.
 
@@ -159,7 +163,6 @@ lastBaseTime(0).
 		+delivering(false);
 		!autocharge;
 		//-route(Iter, PX, PY);
-		
 		.print("Finished all delivery, awaiting orders").
 
 +!move(Iter, PX, PY) : pos(PX, PY) & rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
