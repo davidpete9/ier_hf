@@ -59,16 +59,13 @@ lastBaseTime(0).
 		// B -> calculated cost
 		calc.calc_cost(LastX, LastY, X, Y, W, Capacity, Speed, Charge, BaseTime, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
 		+auctionData(N, X, Y, W, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
-		
-		.print("Calculated cost: ", Bid);
-		.print("Charge left: ", ChargeLeftAfter);
-		.print("ChargeT ", ChargeT);
 		.send(S, tell, place_bid(N, Bid)).		
 		
 		
 +!makeRoute(N) : true
 	<-	.print("Making a route!");
 		?auctionData(N, GoalX, GoalY, Weight, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
+		.print("ChargeT: ", ChargeT);
 		
 		?baseTime(BaseTime);	
 		?lastBaseTime(LB);
@@ -103,7 +100,7 @@ lastBaseTime(0).
 		+route(RouteNr+3, ReturnX, ReturnY).
 		
 +!setLastPos : true 
-	<- ?lastDest(LD, LY);
+	<- 	?lastDest(LD, LY);
 		-lastDest(LD, LY);
 		?routenr(NR);
 		?route(NR-1, NX, NY);
@@ -133,16 +130,15 @@ lastBaseTime(0).
 		
 // Movement / charge related		
 //------------------------------------------------------------------------------		
-<<<<<<< HEAD
-=======
++!autocharge: delivering(true) | (charge(C) & (C >= 100))
+  <- 	true.
 
->>>>>>> b2634ecd937a56e7f365a0a105ab5751a9e427cb
-+!autocharge: delivering(true) | (charge(C) & C >= 100)
-  <- true.
-
-+!autocharge: delivering(false) & charge(C) & C < 100
-  <- set_charge(C,C+1);
-     !autocharge.
++!autocharge: delivering(false) & (charge(C) & (C < 100))
+  <- 	//set_charge(C,C+1);
+  		?charge(Charge);
+		-charge(Charge);
+		+charge(Charge+10);
+     	!autocharge.
 
 +!charge(ChargeT) : (ChargeT == 0) <- true.
 +!charge(ChargeT) : not (ChargeT == 0) 
