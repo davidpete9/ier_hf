@@ -24,8 +24,11 @@ MAS ier_hf {
 	  
 	  drone1 drone
 	      //[mindinspector="gui(cycle,html,history)"]
-	      beliefBaseClass agent.DroneParamsBB("weight(10)","speed(2)","range(50)");
+	      beliefBaseClass agent.DroneParamsBB("weight(10)","speed(2)");
 	  drone2 drone
 	  	  //[mindinspector="gui(cycle,html,history)"]
-	      beliefBaseClass agent.DroneParamsBB("weight(10)","speed(2)","range(50)");
+	      beliefBaseClass agent.DroneParamsBB("weight(10)","speed(3)");
+      drone3 drone
+	  	  //[mindinspector="gui(cycle,html,history)"]
+	      beliefBaseClass agent.DroneParamsBB("weight(20)","speed(4)");
 }          

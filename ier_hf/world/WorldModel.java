@@ -32,6 +32,7 @@ public class WorldModel extends GridWorldModel {
     List<Location> villages =  new ArrayList<Location>();
     
     List<Integer> chargeValues = new ArrayList<Integer>();
+    List<Integer> auctionIds = new ArrayList<Integer>();
 
     // singleton pattern
     protected static WorldModel model = null;
@@ -85,17 +86,21 @@ public class WorldModel extends GridWorldModel {
         this.setMainDepot(10,10);
         this.addDepot(2,4);
         this.addDepot(10,3);
+        this.addDepot(25,30);
 
         this.addVillage(10,13);
         this.addVillage(14,2);
         this.addVillage(5,12);
         this.addVillage(23,5);
         this.addVillage(1,1);
+        this.addVillage(12,32);
+        this.addVillage(30,30);
         this.addVillage(5,5);
         
          for (int i = 0; i < this.nbAgs; i++) {
           setAgPos(i, mainDepot.x,mainDepot.y	);
           this.chargeValues.add(100);
+          this.auctionIds.add(-1);
         }
         return model;
 
@@ -110,11 +115,21 @@ public class WorldModel extends GridWorldModel {
         return;
     }
     
+    public void updateAuctionId(int agId, int auctionId) {
+    	this.auctionIds.set(agId,auctionId);
+    	view.repaint();
+    }
+    
     public void updateChargeValue(int agId, int chargeValue) {
         this.chargeValues.set(agId,chargeValue);
     	view.repaint();
     }
     
     public List<Integer> getChargeValues() {return this.chargeValues;}
+    public List<Integer> getAuctionIds() {return this.auctionIds;}
 
 }
+
+
+
+

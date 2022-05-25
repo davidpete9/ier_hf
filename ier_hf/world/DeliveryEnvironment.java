@@ -24,17 +24,14 @@ public class DeliveryEnvironment extends jason.environment.Environment {
     int     sleep    = 0;
     boolean running  = true;
     boolean hasGUI   = true;
+    int agents = 2;
 
     public static final int SIM_TIME = 60;  // in seconds
-
-    Term                    pick     = Literal.parseLiteral("do(pick)");
-    Term                    drop     = Literal.parseLiteral("do(drop)");
-    Term                    land     = Literal.parseLiteral("do(land)");
-    Term                    fly      = Literal.parseLiteral("do(fly)");
 
 
     @Override
     public void init(String[] args) {
+        agents = Integer.parseInt(args[0]);
         hasGUI = args[2].equals("yes");
         sleep  = Integer.parseInt(args[1]);
         initWorld();
@@ -80,8 +77,12 @@ public class DeliveryEnvironment extends jason.environment.Environment {
                 dirx /= length;
                 diry /= length;
 
-                dirx *= 2;
-                diry *= 2;
+                dirx *= speed;
+                diry *= speed;
+                
+                if ((int)dirx == 0 && (int)diry == 0) {
+                	dirx = 1;
+                }
 
                 double actualLength = Math.sqrt(dirx * dirx + diry*diry);
                 int nextX = 0; int nextY = 0;
@@ -99,22 +100,6 @@ public class DeliveryEnvironment extends jason.environment.Environment {
                 addPercept(ag, Literal.parseLiteral("pos(" + nextX + "," + nextY  + ")"));
                 //logger.warning(action.toString());
 
-            } else if (action.getFunctor().equals("delete_route")) {
-
-                int routeNr = Integer.parseInt(action.getTerm(0).toString());
-                int x = Integer.parseInt(action.getTerm(1).toString());
-                int y = Integer.parseInt(action.getTerm(2).toString());
-
-                removePercept(ag, Literal.parseLiteral("route(" + routeNr + "," + x + "," + y + ")"));
-
-            } else if (action.getFunctor().equals("add_route")) {
-
-                int routeNr = Integer.parseInt(action.getTerm(0).toString());
-                int x = Integer.parseInt(action.getTerm(1).toString());
-                int y = Integer.parseInt(action.getTerm(2).toString());
-
-                addPercept(ag, Literal.parseLiteral("route(" + routeNr + "," + x + "," + y + ")"));
-
             } else if (action.getFunctor().equals("set_charge_visual")) {
 
                 int newCharge = Integer.parseInt(action.getTerm(0).toString());
@@ -122,85 +107,10 @@ public class DeliveryEnvironment extends jason.environment.Environment {
 
                 model.updateChargeValue(agId,newCharge);
 
-            } else if (action.getFunctor().equals("set_last_charge")) {
+            } else if (action.getFunctor().equals("set_auction_visual")) {
 
-                int oldCharge = Integer.parseInt(action.getTerm(0).toString());
-                int newCharge = Integer.parseInt(action.getTerm(1).toString());
-
-                removePercept(ag, Literal.parseLiteral("lastCharge(" + oldCharge + ")"));
-                addPercept(ag, Literal.parseLiteral("lastCharge(" + newCharge + ")"));
-
-            } else if (action.getFunctor().equals("set_basetime")) {
-
-                int oldBT = Integer.parseInt(action.getTerm(0).toString());
-                int newBT = Integer.parseInt(action.getTerm(1).toString());
-
-                removePercept(ag, Literal.parseLiteral("baseTime(" + oldBT + ")"));
-                addPercept(ag, Literal.parseLiteral("baseTime(" + newBT + ")"));
-
-            } else if (action.getFunctor().equals("set_last_dest")) {
-
-                //logger.warning("last dest bby");
-                int oldX = Integer.parseInt(action.getTerm(0).toString());
-                int oldY = Integer.parseInt(action.getTerm(1).toString());
-
-                int newX = Integer.parseInt(action.getTerm(2).toString());
-                int newY = Integer.parseInt(action.getTerm(3).toString());
-                //logger.warning("Old pos: " + oldX + " " + oldY + " new pos: " + newX + " " + newY);
-
-                removePercept(ag, Literal.parseLiteral("lastDest(" + oldX + "," + oldY + ")"));
-                addPercept(ag, Literal.parseLiteral("lasDest(" + newX + "," + newY  + ")"));
-
-            } else if (action.getFunctor().equals("set_delivering")) {
-
-                Boolean val = Boolean.parseBoolean(action.getTerm(0).toString());
-
-                removePercept(ag, Literal.parseLiteral("delivering(" + !val + ")"));
-                addPercept(ag, Literal.parseLiteral("delivering(" + val + ")"));
-
-            } else if (action.getFunctor().equals("set_last_basetime")) {
-
-                int oldBT = Integer.parseInt(action.getTerm(0).toString());
-                int newBT = Integer.parseInt(action.getTerm(1).toString());
-
-                removePercept(ag, Literal.parseLiteral("lastBaseTime(" + oldBT + ")"));
-                addPercept(ag, Literal.parseLiteral("lastBaseTime(" + newBT + ")"));
-
-            } else if (action.getFunctor().equals("set_routenr")) {
-
-                int oldNr = Integer.parseInt(action.getTerm(0).toString());
-                int newNr = Integer.parseInt(action.getTerm(1).toString());
-
-                removePercept(ag, Literal.parseLiteral("routenr(" + oldNr + ")"));
-                addPercept(ag, Literal.parseLiteral("routenr(" + newNr + ")"));
-
-            } else if (action.getFunctor().equals("set_iterator")) {
-
-                int oldIt = Integer.parseInt(action.getTerm(0).toString());
-                int newIt = Integer.parseInt(action.getTerm(1).toString());
-
-                removePercept(ag, Literal.parseLiteral("iterator(" + oldIt + ")"));
-                addPercept(ag, Literal.parseLiteral("iterator(" + newIt + ")"));
-
-            } else if (action.getFunctor().equals("set_charget")) {
-
-                int oldC = Integer.parseInt(action.getTerm(0).toString());
-                int newC = Integer.parseInt(action.getTerm(1).toString());
-
-                removePercept(ag, Literal.parseLiteral("chargeT(" + oldC + ")"));
-                addPercept(ag, Literal.parseLiteral("chargeT(" + newC + ")"));
-
-            } else if (action.getFunctor().equals("set_rechargelocation")) {
-
-                int oldX = Integer.parseInt(action.getTerm(0).toString());
-                int oldY = Integer.parseInt(action.getTerm(1).toString());
-
-                int newX = Integer.parseInt(action.getTerm(2).toString());
-                int newY = Integer.parseInt(action.getTerm(3).toString());
-                //logger.warning("Old pos: " + oldX + " " + oldY + " new pos: " + newX + " " + newY);
-
-                removePercept(ag, Literal.parseLiteral("rechargeLocation(" + oldX + "," + oldY + ")"));
-                addPercept(ag, Literal.parseLiteral("rechargeLocation(" + newX + "," + newY  + ")"));
+                int auctionId = Integer.parseInt(action.getTerm(0).toString());
+		 model.updateAuctionId(agId,auctionId);
 
             }
 
@@ -243,7 +153,7 @@ public class DeliveryEnvironment extends jason.environment.Environment {
     }
 
     public void initWorld() {
-	this.model = WorldModel.create(25,25,2);
+	this.model = WorldModel.create(35,35,agents);
             //clearPercepts();
             logger.warning(model.toString());
             updateAgsPercept();
@@ -308,5 +218,5 @@ public class DeliveryEnvironment extends jason.environment.Environment {
 	     addPercept(agName, Literal.parseLiteral("village(" + d.x + "," + d.y + ")"));
 	 }*/
     }
-
 }
+

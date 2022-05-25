@@ -74,6 +74,7 @@ baseTime(0).
 		-charge(Charge);
 		+charge(ChargeLeftAfter);
 		set_charge_visual(ChargeLeftAfter);
+		set_auction_visual(N);
 	
 		?chargeT(C);
 		-chargeT(C);
@@ -150,9 +151,10 @@ baseTime(0).
 		?charge(Charge);
 		-delivering(true);
 		+delivering(false);
-		!autocharge;
+	    set_auction_visual(-1);
+		.print("Finished all delivery, awaiting orders ", Charge);
+		!autocharge.
 		//-route(Iter, PX, PY);
-		.print("Finished all delivery, awaiting orders ", Charge).
 
 +!move(Iter, PX, PY) : pos(PX, PY) & rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
 	<-	!lowerBaseTime;

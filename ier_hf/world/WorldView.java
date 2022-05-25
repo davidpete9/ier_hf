@@ -101,6 +101,13 @@ public class WorldView extends GridWorldView {
         super.drawAgent(g, x, y, c, -1);
         g.setColor(Color.black);
         int chargeValue = hmodel.getChargeValues().get(id);
-        super.drawString(g, x, y, defaultFont, "Drón"+id+" ("+chargeValue+")");
-    }
+        int auctionOrderId = hmodel.getAuctionIds().get(id);
+        String toWrite = "Drón"+id+" ("+chargeValue+")";
+        if (auctionOrderId != -1) {
+        	toWrite += " Áru: "+auctionOrderId+".";
+        }
+        super.drawString(g, x, y, defaultFont, toWrite);
+      
+   }
 }
+
