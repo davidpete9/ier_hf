@@ -142,13 +142,13 @@ public class DeliveryEnvironment extends jason.environment.Environment {
 
             } else if (action.getFunctor().equals("set_last_dest")) {
 
-                logger.warning("last dest bby");
+                //logger.warning("last dest bby");
                 int oldX = Integer.parseInt(action.getTerm(0).toString());
                 int oldY = Integer.parseInt(action.getTerm(1).toString());
 
                 int newX = Integer.parseInt(action.getTerm(2).toString());
                 int newY = Integer.parseInt(action.getTerm(3).toString());
-                logger.warning("Old pos: " + oldX + " " + oldY + " new pos: " + newX + " " + newY);
+                //logger.warning("Old pos: " + oldX + " " + oldY + " new pos: " + newX + " " + newY);
 
                 removePercept(ag, Literal.parseLiteral("lastDest(" + oldX + "," + oldY + ")"));
                 addPercept(ag, Literal.parseLiteral("lasDest(" + newX + "," + newY  + ")"));
@@ -288,11 +288,11 @@ public class DeliveryEnvironment extends jason.environment.Environment {
         if (l == null) {return;}
         addPercept(agName, Literal.parseLiteral("pos(" + l.x + "," + l.y + ")"));
 
-	 for (Location d : model.getDepots()) {
-	     addPercept(agName, Literal.parseLiteral("depot(" + d.x + "," + d.y + ")"));
-	 }
+        for (Location d : model.getDepots()) {
+            addPercept(agName, Literal.parseLiteral("depot(" + d.x + "," + d.y + ")"));
+        }
 	 
-	 addPercept(agName, Literal.parseLiteral("mainDepot(" + model.getMainDepot().x + "," + model.getMainDepot().y + ")"));
+        addPercept(agName, Literal.parseLiteral("mainDepot(" + model.getMainDepot().x + "," + model.getMainDepot().y + ")"));
 	 
 	 /*for (Location d : model.getVillages()) {
 	     addPercept(agName, Literal.parseLiteral("village(" + d.x + "," + d.y + ")"));
