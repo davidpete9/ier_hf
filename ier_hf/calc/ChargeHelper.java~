@@ -1,6 +1,6 @@
 package calc;
 
-public class CalculateEnergyLoss {
+public class ChargeHelper {
 
   public static final int DEFAULT_ENERGY = 1;
   public static final int DEFAULT_CHARGE_SPEED = 1;
@@ -12,6 +12,10 @@ public class CalculateEnergyLoss {
   
   public static int getChargeTime(int requiredCapacity) {
   	return requiredCapacity*DEFAULT_CHARGE_SPEED;
+  }
+  
+  public static int getChargePerTime() {
+		  return DEFAULT_ENERGY;
   }
   
   public CalculateEnergyLoss() {}

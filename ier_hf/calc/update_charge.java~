@@ -21,7 +21,7 @@ public class update_charge extends DefaultInternalAction {
         int weight = (int) ((NumberTerm) terms[1]).solve(); 
         int chargeValue = (int) ((NumberTerm) terms[2]).solve(); 
 
-        int energy = ChargeHelper.calculateEnergyPerTime(capacity,weight);
+        int energy = CalculateEnergyLoss.calculateEnergyPerTime(capacity,weight);
 
         return un.unifies(terms[3], new NumberTermImpl(chargeValue-energy));
     }

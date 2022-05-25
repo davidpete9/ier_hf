@@ -12,7 +12,7 @@ import jason.environment.grid.Location;
 
 
 
-public class update_charge extends DefaultInternalAction {
+public class get_charge extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
@@ -21,9 +21,8 @@ public class update_charge extends DefaultInternalAction {
         int weight = (int) ((NumberTerm) terms[1]).solve(); 
         int chargeValue = (int) ((NumberTerm) terms[2]).solve(); 
 
-        int energy = ChargeHelper.calculateEnergyPerTime(capacity,weight);
+        int energy = ChargeHelper.getChargePerTime();
 
-        return un.unifies(terms[3], new NumberTermImpl(chargeValue-energy));
+        return un.unifies(terms[3], new NumberTermImpl(chargeValue+energy));
     }
 }
-

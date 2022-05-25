@@ -73,18 +73,6 @@ public class calc_cost extends DefaultInternalAction {
         
         
 
-	if (itemWeight > cargoCapacity) {
-	ts.getLogger().info("Nem tudja elvinni a dron, tul nagy a csomag.");
-	un.unifies(terms[9], new NumberTermImpl(10));//ReturnAtX
-	un.unifies(terms[10], new NumberTermImpl(10)); //ReturnAtY
-	un.unifies(terms[11], new NumberTermImpl(maxBid));
-	un.unifies(terms[12], new NumberTermImpl(0));
-	un.unifies(terms[13], new NumberTermImpl(10)); //StartAtX
-	un.unifies(terms[14], new NumberTermImpl(10)); //StartAtY
-        return un.unifies(terms[15], new NumberTermImpl(0)); 
-	}
-	
-
 	// Drone has this information in it's belief base, but it is simpler to query this way.
         WorldModel model = WorldModel.get();
         ArrayList<Location> refuelStations = new ArrayList<Location>();
@@ -101,9 +89,6 @@ public class calc_cost extends DefaultInternalAction {
         
         
         
-        
-        
-        
         int to_maindepot = timeCost(get_dist(lastX,lastY, main.x,main.y),speed);  
         
         int from_depot_to_goal = timeCost(get_dist(main.x, main.y, goalX, goalY),speed); 
@@ -111,8 +96,8 @@ public class calc_cost extends DefaultInternalAction {
         int from_goal_back_to_main_depot = timeCost(get_dist(goalX,goalY,main.x,main.y),speed);
         
         
-        int costWithCargo = ChargeHelper.calculateEnergyPerTime(cargoCapacity,itemWeight);
-        int costWithNoCargo = ChargeHelper.calculateEnergyPerTime(cargoCapacity,0);
+        int costWithCargo = CalculateEnergyLoss.calculateEnergyPerTime(cargoCapacity,itemWeight);
+        int costWithNoCargo = CalculateEnergyLoss.calculateEnergyPerTime(cargoCapacity,0);
         
         int chargeCost = (to_maindepot+from_goal_back_to_main_depot)*costWithNoCargo+from_depot_to_goal*costWithCargo;
         
@@ -121,7 +106,7 @@ public class calc_cost extends DefaultInternalAction {
         int full_cost = baseTime+to_maindepot+from_depot_to_goal;
         ts.getLogger().info(" main to goalll..."+get_dist(main.x, main.y, goalX, goalY));
         
-        ts.getLogger().info("full cost: "+full_cost);
+       ts.getLogger().info("full cost: "+full_cost);
         
         if (chargeWillBe - chargeCost > 0) { //1. OK. No need to charge, it can go back to main AFTER the order!
         	        ts.getLogger().info("option 1, main-main no charge");
@@ -156,7 +141,7 @@ public class calc_cost extends DefaultInternalAction {
            	if (chargeWillBe - chargeCost > 0) { // 3. It can go to main depot to charge first.
            	     //Charge cost need to be enught to after the delivery it should be enought to go to the closest depot.
            	     ts.getLogger().info("option 3, main-depo "+chargeT+" charge.");
-           	         chargeT = ChargeHelper.getChargeTime(chargeCostToClosest-(chargeWillBe-chargeCost));
+           	         chargeT = CalculateEnergyLoss.getChargeTime(chargeCostToClosest-(chargeWillBe-chargeCost));
            	         un.unifies(terms[9], new NumberTermImpl(closestStationToDestination.x));//ReturnAtX
 	                 un.unifies(terms[10], new NumberTermImpl(closestStationToDestination.y)); //ReturnAtY
            	     	 un.unifies(terms[11], new NumberTermImpl(full_cost+chargeT));
@@ -176,7 +161,7 @@ public class calc_cost extends DefaultInternalAction {
            	   	int chargeToMain = from_depot_to_main*costWithNoCargo;
            	   	int fromMainToGoalAndClosest = from_depot_to_goal*costWithCargo+from_goal_to_closest_depo*costWithNoCargo;
            	   	
-           	   	chargeT = ChargeHelper.getChargeTime((chargeCost+chargeToMain+fromMainToGoalAndClosest)-chargeWillBe);
+           	   	chargeT = CalculateEnergyLoss.getChargeTime((chargeCost+chargeToMain+fromMainToGoalAndClosest)-chargeWillBe);
            	   	ts.getLogger().info("option 4, depo-depo/main "+chargeT+" charge.");
            	   	un.unifies(terms[9], new NumberTermImpl(closestStationToDestination.x));//ReturnAtX
 	                un.unifies(terms[10], new NumberTermImpl(closestStationToDestination.y)); //ReturnAtY
