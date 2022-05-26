@@ -165,7 +165,7 @@ baseTime(0).
 		+iterator(Iter+1);
 		
 		?chargeT(ChargeTime);
-		.print("The drone is charging!");
+		//.print("The drone is charging!");
 		!charge(ChargeTime);
 
 		?route(Iter+1, NextX, NextY);
