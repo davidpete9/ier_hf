@@ -64,6 +64,7 @@ baseTime(0).
 +!makeRoute(N) : true
 	<-	.print("Making a route!");
 		?auctionData(N, GoalX, GoalY, Weight, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
+		-auctionData(N, GoalX, GoalY, Weight, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
 		.print("ChargeT: ", ChargeT);
 		
 		?baseTime(BaseTime);
@@ -100,24 +101,27 @@ baseTime(0).
 		?route(NR-1, NX, NY);
 		+lastDest(NX, NY).
 	 
-+winner(N,W)[source(S)] : (.my_name(I) & winner(N,I) & delivering(false)) 
-	<-	!makeRoute(N);
-		!setLastPos;
-		-delivering(false);
++winner(N,W)[source(S)] : ((.my_name(I) & winner(N,I)) & (delivering(D) & (D = false))) 
+	<-	-delivering(false);
 		+delivering(true);
+		
+		!makeRoute(N);
+		!setLastPos;
 		?iterator(Iter);
 		?route(Iter, NextX, NextY);
-		.print("I WON :D");//.... But at what cost?!");
+		.print("I won the auction. Time to start delivering the items.");
 		!move(Iter, NextX, NextY).
 	
-+winner(N,W)[source(S)] : (.my_name(I) & winner(N,I) & delivering(true)) 
++winner(N,W)[source(S)] : ((.my_name(I) & winner(N,I)) & (delivering(D) & (D = true))) 
 	<-	!makeRoute(N);
 		!setLastPos;
-		.print("I WON :D").//.... But at what cost?!").
+		.print("I won the auction. Adding new routes to complete.").
 	
 		
-+winner(N,W)[source(S)] : (.my_name(I) & chargeT(C) & not winner(N,I)) 
-	<- 	.print("I did not win :(").
++winner(N,W)[source(S)] : (.my_name(I) & not winner(N,I)) 
+	<- 	?auctionData(N, GoalX, GoalY, Weight, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
+		-auctionData(N, GoalX, GoalY, Weight, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
+		.print("I did not win :(").
 	
 		
 // Movement / charge related		
@@ -138,7 +142,7 @@ baseTime(0).
 		?chargeT(ChargeTime);
 		-chargeT(ChargeTime);
 		+chargeT(ChargeTime-1);
-		.print("CHARGING ", ChargeTime);
+		.print("Time left until the drone is fully charged: ", ChargeTime);
 		
 		-charge(Charge);
 		calc.get_charge(Charge,NewC);
@@ -148,13 +152,12 @@ baseTime(0).
 		
 +!move(Iter, PX, PY) : pos(PX, PY) & routenr(NR) & (Iter == (NR-1))
 	<-	!lowerBaseTime;
-		?charge(Charge);
 		-delivering(true);
 		+delivering(false);
 	    set_auction_visual(-1);
-		.print("Finished all delivery, awaiting orders ", Charge);
-		!autocharge.
+		.print("Finished all delivery, awaiting orders.");
 		//-route(Iter, PX, PY);
+		!autocharge.
 
 +!move(Iter, PX, PY) : pos(PX, PY) & rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
 	<-	!lowerBaseTime;
@@ -162,11 +165,11 @@ baseTime(0).
 		+iterator(Iter+1);
 		
 		?chargeT(ChargeTime);
+		//.print("The drone is charging!");
 		!charge(ChargeTime);
-		
-		//-route(Iter, PX, PY);
-		
+
 		?route(Iter+1, NextX, NextY);
+		-route(Iter, PX, PY);
 		!move(Iter+1, NextX, NextY).
 		
 +!move(Iter, PX, PY) : pos(PX, PY) & not rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
@@ -174,14 +177,12 @@ baseTime(0).
 		-iterator(Iter);
 		+iterator(Iter+1);
 		
-		//-route(Iter, PX, PY);
-		
 		?route(Iter+1, NextX, NextY);
+		-route(Iter, PX, PY);
 		!move(Iter+1, NextX, NextY).
 		
 +!move(Iter, PX, PY) : not pos(PX, PY)
-	<-	//.print("Megyek oda: ", PX, " ", PY);
-		!lowerBaseTime;
+	<-	!lowerBaseTime;
 		?pos(AgX, AgY);
 		?speed(Speed);
 		move_towards(AgX, AgY, PX, PY, Speed);
