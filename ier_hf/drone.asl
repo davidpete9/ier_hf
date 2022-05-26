@@ -107,13 +107,13 @@ baseTime(0).
 		+delivering(true);
 		?iterator(Iter);
 		?route(Iter, NextX, NextY);
-		.print("I WON.... But at what cost?!");
+		.print("I WON :D");//.... But at what cost?!");
 		!move(Iter, NextX, NextY).
 	
 +winner(N,W)[source(S)] : (.my_name(I) & winner(N,I) & delivering(true)) 
 	<-	!makeRoute(N);
 		!setLastPos;
-		.print("I WON.... But at what cost?!").
+		.print("I WON :D").//.... But at what cost?!").
 	
 		
 +winner(N,W)[source(S)] : (.my_name(I) & chargeT(C) & not winner(N,I)) 
@@ -138,7 +138,7 @@ baseTime(0).
 		?chargeT(ChargeTime);
 		-chargeT(ChargeTime);
 		+chargeT(ChargeTime-1);
-		.print("CHARGING TIME BABY ", ChargeTime);
+		.print("CHARGING ", ChargeTime);
 		
 		-charge(Charge);
 		calc.get_charge(Charge,NewC);
