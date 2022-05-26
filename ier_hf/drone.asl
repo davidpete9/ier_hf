@@ -75,7 +75,6 @@ baseTime(0).
 		-charge(Charge);
 		+charge(ChargeLeftAfter);
 		set_charge_visual(ChargeLeftAfter);
-		set_auction_visual(N);
 	
 		?chargeT(C);
 		-chargeT(C);
@@ -147,7 +146,6 @@ baseTime(0).
 		-charge(Charge);
 		calc.get_charge(Charge,NewC);
 		+charge(NewC); // Should be temporary
-		set_charge_visual(NewC);
 		!charge(ChargeTime-1).
 		
 +!move(Iter, PX, PY) : pos(PX, PY) & routenr(NR) & (Iter == (NR-1))

@@ -13,7 +13,8 @@
 MAS ier_hf {
 
     
-    environment: world.DeliveryEnvironment(3,500,yes)
+    environment: world.DeliveryEnvironment(2,500,yes)
+	//number of agents, time between actions, gui needed
 
       agents: 
 	  
@@ -27,7 +28,7 @@ MAS ier_hf {
 	      beliefBaseClass agent.DroneParamsBB("weight(10)","speed(2)");
 	  drone2 drone
 	  	  //[mindinspector="gui(cycle,html,history)"]
-	      beliefBaseClass agent.DroneParamsBB("weight(10)","speed(3)");
+	      beliefBaseClass agent.DroneParamsBB("weight(8)","speed(3)");
       //drone3 drone
 	  	  //[mindinspector="gui(cycle,html,history)"]
 	      //beliefBaseClass agent.DroneParamsBB("weight(20)","speed(4)");
