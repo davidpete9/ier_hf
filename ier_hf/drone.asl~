@@ -1,9 +1,6 @@
 /*Initial beliefs*/
 // Current charge, its value lies between 0 and 100
 charge(100).
-
-// Last charge - in case this drone does not win the auction
-lastCharge(100).
 		
 // Number of auctions won
 routenr(0).
@@ -26,8 +23,6 @@ rechargeLocation(0,0).
 // Base time
 baseTime(0).
 
-lastBaseTime(0).
-
 //------------------------------------------------------------------------------
 
 // Minden dronnak vissza kell mennie a main depotba csomag felvetelehez
@@ -49,14 +44,18 @@ lastBaseTime(0).
 		?lastDest(LastX, LastY);
 		?baseTime(BaseTime);
 		
-		// agent posX, agent posY, goal pos X, goal pos Y,
+		// LastX, LastY -> the position of the drone once it delivers everything
+		// X, Y -> Where to deliver the items
 		// Capacity -> drone weight capacity
 		// W -> weight of the actual item
 		// Charge -> actual charge of the drone
 		// Speed -> velocity of the drone
-		
-		// StationX, StationY -> closest (relative to the destination) refueling station's coords
-		// B -> calculated cost
+		// BaseTime -> Minimum time until the drone can even start this delivery
+		// ReturnX, ReturnY -> which station should the drone return to after the delivery
+		// Bid -> Time it would take to deliver this item
+		// ChargeLeftAfter -> Charge after delivery
+		// StartX, StartY -> Which station should the drone go to first
+		// ChargeT -> How long should the drone charge at StartX, StartY
 		calc.calc_cost(LastX, LastY, X, Y, W, Capacity, Speed, Charge, BaseTime, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
 		+auctionData(N, X, Y, W, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
 		.send(S, tell, place_bid(N, Bid)).		
@@ -67,21 +66,15 @@ lastBaseTime(0).
 		?auctionData(N, GoalX, GoalY, Weight, ReturnX, ReturnY, Bid, ChargeLeftAfter, StartX, StartY, ChargeT);
 		.print("ChargeT: ", ChargeT);
 		
-		?baseTime(BaseTime);	
-		?lastBaseTime(LB);
-		-lastBaseTime(LB);
-		+lastBaseTime(BaseTime);
-		
+		?baseTime(BaseTime);
 		-baseTime(BaseTime);
 		+baseTime(BaseTime + Bid);
 		
 		?charge(Charge);
-		?lastCharge(LC);
-		-lastCharge(LC);
-		+lastCharge(Charge);
 		-charge(Charge);
 		+charge(ChargeLeftAfter);
 		set_charge_visual(ChargeLeftAfter);
+		set_auction_visual(N);
 	
 		?chargeT(C);
 		-chargeT(C);
@@ -106,8 +99,7 @@ lastBaseTime(0).
 		?routenr(NR);
 		?route(NR-1, NX, NY);
 		+lastDest(NX, NY).
-		
-// TODO: modositani azt, hogy mi van ha nyer		 
+	 
 +winner(N,W)[source(S)] : (.my_name(I) & winner(N,I) & delivering(false)) 
 	<-	!makeRoute(N);
 		!setLastPos;
@@ -124,7 +116,6 @@ lastBaseTime(0).
 		.print("I WON.... But at what cost?!").
 	
 		
-// TODO: modositani azt, hogy mi van ha nem nyer
 +winner(N,W)[source(S)] : (.my_name(I) & chargeT(C) & not winner(N,I)) 
 	<- 	.print("I did not win :(").
 	
@@ -160,9 +151,10 @@ lastBaseTime(0).
 		?charge(Charge);
 		-delivering(true);
 		+delivering(false);
-		!autocharge;
+	    set_auction_visual(-1);
+		.print("Finished all delivery, awaiting orders ", Charge);
+		!autocharge.
 		//-route(Iter, PX, PY);
-		.print("Finished all delivery, awaiting orders ", Charge).
 
 +!move(Iter, PX, PY) : pos(PX, PY) & rechargeLocation(PX, PY) & routenr(NR) & not (Iter == (NR-1))
 	<-	!lowerBaseTime;

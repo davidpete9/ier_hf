@@ -192,17 +192,6 @@ public class DeliveryEnvironment extends jason.environment.Environment {
     
         clearPercepts(agName);
         
-        addPercept(agName,Literal.parseLiteral("charge(" + 100 + ")"));
-        addPercept(agName,Literal.parseLiteral("lastCharge(" + 100 + ")"));
-        addPercept(agName,Literal.parseLiteral("routenr(" + 0 + ")"));
-        addPercept(agName,Literal.parseLiteral("iterator(" + 0 + ")"));
-        addPercept(agName,Literal.parseLiteral("delivering(" + false + ")"));
-        addPercept(agName,Literal.parseLiteral("lastDest(" + 10 + "," + 10 + ")"));
-        addPercept(agName,Literal.parseLiteral("chargeT(" + 0 + ")"));
-        addPercept(agName,Literal.parseLiteral("rechargeLocation(" + 0 + "," + 0 + ")"));
-        addPercept(agName,Literal.parseLiteral("baseTime(" + 0 + ")"));
-        addPercept(agName,Literal.parseLiteral("lastBaseTime(" + 0 + ")"));
-        
         // its location
         Location l = model.getAgPos(ag);
         if (l == null) {return;}
